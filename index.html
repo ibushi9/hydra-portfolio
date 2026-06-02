@@ -184,7 +184,7 @@ button{font-family:inherit}
 #services{background:var(--blk2)}
 .s-head{display:grid;grid-template-columns:1fr auto;align-items:end;gap:24px;margin-bottom:64px;flex-wrap:wrap}
 .s-num-big{font-family:'EB Garamond',serif;font-size:clamp(80px,12vw,160px);line-height:1;color:rgba(0,255,136,.06);font-weight:700;letter-spacing:-4px;user-select:none;line-height:.85}
-.s-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.04)}
+.s-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.04)}
 .s-card{background:var(--blk2);padding:40px 32px;transition:all .4s;position:relative;overflow:hidden;cursor:default}
 .s-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,255,136,.04) 0%,transparent 60%);opacity:0;transition:opacity .35s}
 .s-card::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--gneon);box-shadow:0 0 8px var(--gneon);transition:width .4s ease}
@@ -509,13 +509,7 @@ body.admin-mode #hero,body.admin-mode .marquee-band,body.admin-mode #services,bo
         <p>TikTok・Instagram・YouTube等のプラットフォームで効果的なブランドコミュニケーションを展開します。</p>
         <a class="s-more" onclick="scrollTo2('contact')">詳しく見る →</a>
       </div>
-      <div class="s-card">
-        <span class="s-idx">/ 03</span>
-        <div class="s-ico"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
-        <h3>ブランディング</h3>
-        <p>ロゴデザインからブランドガイドラインまで、一貫性のあるブランドアイデンティティを構築します。</p>
-        <a class="s-more" onclick="scrollTo2('contact')">詳しく見る →</a>
-      </div>
+
     </div>
   </div>
 </section>
@@ -605,13 +599,15 @@ body.admin-mode #hero,body.admin-mode .marquee-band,body.admin-mode #services,bo
         </div>
       </div>
       <div class="rv d2">
-        <form class="cf" onsubmit="submitForm(event)">
+        <form class="cf" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="submitForm(event)">
+          <input type="hidden" name="form-name" value="contact">
+          <p style="display:none"><input name="bot-field"></p>
           <div class="cf-row">
-            <div class="cf-fg"><label>Name</label><input type="text" placeholder="山田 太郎" required></div>
-            <div class="cf-fg"><label>Email</label><input type="email" placeholder="example@email.com" required></div>
+            <div class="cf-fg"><label>Name</label><input type="text" name="name" placeholder="山田 太郎" required></div>
+            <div class="cf-fg"><label>Email</label><input type="email" name="email" placeholder="example@email.com" required></div>
           </div>
-          <div class="cf-fg"><label>Subject</label><input type="text" placeholder="お問い合わせの件名"></div>
-          <div class="cf-fg"><label>Message</label><textarea placeholder="ご要望・ご質問をお書きください" required></textarea></div>
+          <div class="cf-fg"><label>Subject</label><input type="text" name="subject" placeholder="お問い合わせの件名"></div>
+          <div class="cf-fg"><label>Message</label><textarea name="message" placeholder="ご要望・ご質問をお書きください" required></textarea></div>
           <button type="submit" class="btn-send" id="sendBtn">SEND MESSAGE →</button>
         </form>
       </div>
@@ -678,7 +674,7 @@ body.admin-mode #hero,body.admin-mode .marquee-band,body.admin-mode #services,bo
 /* ═══ CONFIG ═══ */
 const CONFIG={
   ADMIN_PW:'hydra2025',
-  GH_OWNER:'ibushi9',
+  GH_OWNER:'YOUR_GITHUB_USERNAME',
   GH_REPO:'hydra-portfolio',
   GH_BRANCH:'main',
   GH_FILE:'videos.json'
@@ -1014,7 +1010,29 @@ async function delTk(i){
 window.addEventListener('hashchange',()=>{if(location.hash==='#admin')showAdmin();else document.body.classList.remove('admin-mode')});
 loadVideos();
 if(location.hash==='#admin')showAdmin();
-function submitForm(e){e.preventDefault();const b=document.getElementById('sendBtn');b.textContent='SENT ✓';b.style.background='var(--gneon)';b.style.color='var(--blk)';b.disabled=true}
+function submitForm(e){
+  e.preventDefault();
+  const form=e.target;
+  const btn=document.getElementById('sendBtn');
+  btn.disabled=true;btn.textContent='SENDING...';
+  fetch('/',{
+    method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:new URLSearchParams(new FormData(form)).toString()
+  }).then(res=>{
+    if(res.ok){
+      btn.textContent='SENT ✓';
+      btn.style.background='var(--gneon)';
+      btn.style.color='var(--blk)';
+      form.reset();
+    }else{throw new Error()}
+  }).catch(()=>{
+    btn.disabled=false;
+    btn.textContent='ERROR — RETRY';
+    btn.style.background='#ff4466';
+    setTimeout(()=>{btn.textContent='SEND MESSAGE →';btn.style.background='';btn.style.color='';btn.disabled=false},3000);
+  });
+}
 </script>
 </body>
 </html>
