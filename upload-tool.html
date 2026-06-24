@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HYDRA Upload Tool — マルチ投稿ツール</title>
+<title>HYDRA SNS Manager Pro — マルチ投稿・AIリサーチツール</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Noto+Sans+JP:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -340,23 +340,110 @@ main{padding-top:108px;min-height:100vh}
 .spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.15);
   border-top-color:var(--green);border-radius:50%;animation:spin .55s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── RESEARCH ── */
+.trend-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.6rem}
+.trend-link{display:flex;align-items:center;gap:.5rem;padding:.65rem .9rem;
+  background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  font-size:.78rem;font-family:'Space Mono',monospace;transition:all .2s;color:var(--text2)}
+.trend-link:hover{border-color:var(--border2);color:var(--text);transform:translateY(-1px)}
+.trend-link.yt:hover{border-color:rgba(255,0,0,.3);color:#ff4444}
+.trend-link.tw:hover{border-color:rgba(29,155,240,.3);color:#1d9bf0}
+.trend-link.tt:hover{border-color:rgba(105,201,208,.3);color:#69c9d0}
+.trend-link.ig:hover{border-color:rgba(225,48,108,.3);color:#e1306c}
+.trend-link.gl:hover{border-color:rgba(0,255,136,.3);color:var(--green)}
+.trend-link.kw:hover{border-color:rgba(255,204,0,.3);color:var(--yellow)}
+
+.ref-filter{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+.ref-filter-btn{background:var(--bg2);border:1px solid var(--border);border-radius:20px;
+  color:var(--text3);font-size:.7rem;font-family:'Space Mono',monospace;padding:.3rem .75rem;
+  cursor:pointer;transition:all .2s}
+.ref-filter-btn.active{background:rgba(0,255,136,.08);border-color:var(--green-border);color:var(--green)}
+
+.ref-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  padding:.8rem 1rem;margin-bottom:.5rem;display:flex;align-items:flex-start;gap:.75rem}
+.ref-card-info{flex:1;min-width:0}
+.ref-card-title{font-size:.85rem;font-weight:500;margin-bottom:.2rem;word-break:break-all}
+.ref-card-meta{font-size:.7rem;color:var(--text3);font-family:'Space Mono',monospace}
+.ref-card-note{font-size:.78rem;color:var(--text2);margin-top:.3rem}
+
+.keyword-chip{display:inline-flex;align-items:center;gap:.4rem;
+  background:var(--bg2);border:1px solid var(--border);border-radius:6px;
+  padding:.35rem .75rem;margin:.2rem;font-size:.78rem;font-family:'Space Mono',monospace}
+.keyword-chip .kw-links{display:flex;gap:.3rem;margin-left:.3rem}
+.keyword-chip .kw-links a{color:var(--text3);font-size:.7rem;transition:color .2s}
+.keyword-chip .kw-links a:hover{color:var(--green)}
+
+.comp-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  padding:.85rem 1rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.75rem}
+.comp-info{flex:1;min-width:0}
+.comp-name{font-size:.88rem;font-weight:500}
+.comp-meta{font-size:.72rem;color:var(--text3);font-family:'Space Mono',monospace;margin-top:.15rem}
+
+/* ── AI ASSIST ── */
+.ai-input-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.75rem .9rem}
+.ai-plat-check{display:flex;flex-wrap:wrap;gap:.65rem 1.2rem;margin-top:.2rem}
+.ai-check-label{display:flex;align-items:center;gap:.4rem;font-size:.83rem;cursor:pointer}
+.ai-check-label input{accent-color:var(--green);width:14px;height:14px}
+
+.ai-result-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  padding:1.1rem;margin-bottom:.75rem}
+.ai-result-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem}
+.ai-result-plat{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:.4rem}
+.ai-result-actions{display:flex;gap:.4rem}
+.ai-field{margin-bottom:.75rem}
+.ai-field-label{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--text3);letter-spacing:.08em;margin-bottom:.3rem}
+.ai-field-val{font-size:.83rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.ai-tags{display:flex;flex-wrap:wrap;gap:.3rem}
+.ai-tag{background:rgba(0,255,136,.07);border:1px solid var(--green-border);color:var(--green);
+  font-size:.7rem;padding:.15rem .5rem;border-radius:4px;font-family:'Space Mono',monospace}
+.ai-hook{background:rgba(255,204,0,.07);border:1px solid rgba(255,204,0,.25);color:var(--yellow);
+  font-size:.72rem;padding:.18rem .5rem;border-radius:4px;margin:.15rem;display:inline-block;font-family:'Space Mono',monospace}
+
+/* ── ANALYTICS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.65rem;margin-bottom:1rem}
+@media(min-width:500px){.kpi-grid{grid-template-columns:repeat(4,1fr)}}
+.kpi-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;
+  padding:1rem;text-align:center}
+.kpi-val{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--green);line-height:1}
+.kpi-label{font-size:.7rem;color:var(--text3);font-family:'Space Mono',monospace;margin-top:.35rem;letter-spacing:.04em}
+
+.analytics-row{background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  padding:.75rem 1rem;margin-bottom:.45rem;display:grid;
+  grid-template-columns:auto 1fr repeat(4,auto);gap:.75rem;align-items:center}
+.analytics-row .ar-plat{font-size:1.1rem}
+.analytics-row .ar-title{font-size:.83rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.analytics-row .ar-date{font-size:.68rem;color:var(--text3);font-family:'Space Mono',monospace}
+.analytics-row .ar-stat{font-size:.78rem;text-align:right;font-family:'Space Mono',monospace;white-space:nowrap}
+.analytics-row .ar-stat span{font-size:.62rem;color:var(--text3);display:block}
+.analytics-del{background:none;border:none;color:var(--text3);font-size:.78rem;cursor:pointer;padding:.2rem;transition:color .2s}
+.analytics-del:hover{color:var(--red)}
+
+@media(max-width:600px){
+  .ai-input-grid{grid-template-columns:1fr}
+  .analytics-row{grid-template-columns:auto 1fr auto auto}
+  .analytics-row .ar-stat:nth-child(n+5){display:none}
+}
 </style>
 </head>
 <body>
 
 <header>
   <div class="logo">
-    <em>HYDRA</em>.UPLOAD
-    <small>MULTI-PLATFORM TOOL</small>
+    <em>HYDRA</em>.SNS PRO
+    <small>AI RESEARCH × MULTI-UPLOAD</small>
   </div>
   <a href="index.html" class="back-link">← ポートフォリオに戻る</a>
 </header>
 
 <div class="nav-wrap">
   <button class="nav-tab active" data-tab="upload">📤 アップロード</button>
+  <button class="nav-tab" data-tab="research">🔍 リサーチ</button>
+  <button class="nav-tab" data-tab="ai">🤖 AIアシスト</button>
+  <button class="nav-tab" data-tab="analytics">📊 分析</button>
   <button class="nav-tab" data-tab="queue">📋 キュー</button>
   <button class="nav-tab" data-tab="accounts">👤 アカウント</button>
-  <button class="nav-tab" data-tab="settings">⚙️ API設定</button>
+  <button class="nav-tab" data-tab="settings">⚙️ 設定</button>
 </div>
 
 <main>
@@ -553,7 +640,244 @@ main{padding-top:108px;min-height:100vh}
       </div>
     </div>
 
+    <div class="settings-section">
+      <div class="settings-section-title">🤖 Claude AI</div>
+      <div class="card">
+        <div class="settings-row">
+          <div class="settings-row-info">
+            <div class="settings-row-label">Anthropic API Key</div>
+            <div class="settings-row-desc">AIアシスト機能で使用。<a href="https://console.anthropic.com" target="_blank" style="color:var(--green)">console.anthropic.com</a> で取得</div>
+          </div>
+          <input type="password" class="settings-input" data-key="anthropic_api_key" placeholder="sk-ant-...">
+        </div>
+      </div>
+    </div>
+
     <button class="btn btn-primary" onclick="Settings.save()">💾 保存する</button>
+  </div>
+
+  <!-- ── RESEARCH TAB ── -->
+  <div class="tab-pane" id="pane-research">
+    <div class="page-head">
+      <h1 class="page-title">リサーチ</h1>
+      <p class="page-sub">トレンド発見・競合チェック・参考ストック</p>
+    </div>
+
+    <!-- トレンドダッシュボード -->
+    <div class="card">
+      <div class="card-label">📈 トレンドダッシュボード（今すぐ確認）</div>
+      <div class="trend-links">
+        <a href="https://www.youtube.com/feed/trending?gl=JP" target="_blank" class="trend-link yt">▶️<span>YouTube トレンド JP</span></a>
+        <a href="https://twitter.com/explore/tabs/trending" target="_blank" class="trend-link tw">𝕏<span>X トレンド</span></a>
+        <a href="https://trends.google.co.jp/trends/?geo=JP" target="_blank" class="trend-link gl">🔍<span>Google トレンド JP</span></a>
+        <a href="https://www.tiktok.com/explore" target="_blank" class="trend-link tt">🎵<span>TikTok 探索</span></a>
+        <a href="https://later.com/hashtag-suggestions/" target="_blank" class="trend-link ig">📷<span>ハッシュタグ分析</span></a>
+        <a href="https://keywordtool.io/tiktok" target="_blank" class="trend-link kw">🔑<span>TikTok キーワード</span></a>
+      </div>
+    </div>
+
+    <!-- キーワード追跡 -->
+    <div class="card">
+      <div class="card-label" style="display:flex;justify-content:space-between;align-items:center">
+        🔑 キーワード追跡
+        <button class="btn btn-outline btn-sm" onclick="Research.addKeyword()">+ 追加</button>
+      </div>
+      <div id="keywordList"><p style="color:var(--text3);font-size:.8rem">追跡したいキーワードを追加してください</p></div>
+    </div>
+
+    <!-- 参考コンテンツストック -->
+    <div class="card">
+      <div class="card-label" style="display:flex;justify-content:space-between;align-items:center">
+        📌 参考コンテンツストック
+        <button class="btn btn-outline btn-sm" onclick="Research.showAddRef()">+ 参考を追加</button>
+      </div>
+      <div class="ref-filter">
+        <button class="ref-filter-btn active" data-filter="all">すべて</button>
+        <button class="ref-filter-btn" data-filter="youtube">▶️ YouTube</button>
+        <button class="ref-filter-btn" data-filter="tiktok">🎵 TikTok</button>
+        <button class="ref-filter-btn" data-filter="instagram">📷 Instagram</button>
+        <button class="ref-filter-btn" data-filter="twitter">𝕏 X</button>
+      </div>
+      <div id="refList"><p style="color:var(--text3);font-size:.8rem;padding:.5rem 0">参考にしたいコンテンツのURLをストックしましょう</p></div>
+    </div>
+
+    <!-- 競合アカウント -->
+    <div class="card">
+      <div class="card-label" style="display:flex;justify-content:space-between;align-items:center">
+        👁 競合アカウント監視
+        <button class="btn btn-outline btn-sm" onclick="Research.showAddCompetitor()">+ 追加</button>
+      </div>
+      <div id="competitorList"><p style="color:var(--text3);font-size:.8rem">競合・参考アカウントを登録してモニタリング</p></div>
+    </div>
+  </div>
+
+  <!-- ── AI ASSIST TAB ── -->
+  <div class="tab-pane" id="pane-ai">
+    <div class="page-head">
+      <h1 class="page-title">AIアシスト</h1>
+      <p class="page-sub">Claudeがプラットフォーム最適キャプション・ハッシュタグ・フックを生成</p>
+    </div>
+
+    <div id="ai-api-warn" class="alert alert-warn" style="display:none">
+      ⚠️ 「設定」タブにAnthropic API Keyを入力するとAI機能が使えます
+    </div>
+
+    <div class="card">
+      <div class="card-label">入力情報</div>
+      <div class="ai-input-grid">
+        <div class="form-group">
+          <label class="form-label">トピック / 動画の内容 <b>*</b></label>
+          <input type="text" class="form-input" id="aiTopic" placeholder="例: 新潟グルメ紹介、筋トレ解説、コスメレビュー">
+        </div>
+        <div class="form-group">
+          <label class="form-label">業種 / ニッチ</label>
+          <input type="text" class="form-input" id="aiNiche" placeholder="例: フード、フィットネス、美容、ガジェット">
+        </div>
+        <div class="form-group">
+          <label class="form-label">トーン</label>
+          <select class="form-input" id="aiTone">
+            <option value="casual">カジュアル・親しみやすい</option>
+            <option value="professional">プロフェッショナル</option>
+            <option value="educational">教育的・解説系</option>
+            <option value="entertaining">エンタメ・バズ狙い</option>
+            <option value="emotional">感情的・共感系</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">ターゲット層</label>
+          <input type="text" class="form-input" id="aiTarget" placeholder="例: 20代女性、筋トレ初心者、主婦">
+        </div>
+        <div class="form-group">
+          <label class="form-label">キーメッセージ</label>
+          <input type="text" class="form-input" id="aiMessage" placeholder="例: 誰でも簡単にできる、知らないと損、衝撃の結果">
+        </div>
+        <div class="form-group">
+          <label class="form-label">言語</label>
+          <select class="form-input" id="aiLang">
+            <option value="ja">日本語</option>
+            <option value="en">English</option>
+            <option value="both">日本語＋English</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">生成するプラットフォーム</label>
+        <div class="ai-plat-check">
+          <label class="ai-check-label"><input type="checkbox" value="tiktok" checked> 🎵 TikTok</label>
+          <label class="ai-check-label"><input type="checkbox" value="instagram" checked> 📷 Instagram</label>
+          <label class="ai-check-label"><input type="checkbox" value="youtube" checked> ▶️ YouTube</label>
+          <label class="ai-check-label"><input type="checkbox" value="twitter" checked> 𝕏 X/Twitter</label>
+        </div>
+      </div>
+      <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap">
+        <button class="btn btn-primary" id="aiGenerateBtn" onclick="AIAssist.generate()">
+          <span id="aiGenLabel">🤖 キャプション生成</span>
+        </button>
+        <span style="font-size:.75rem;color:var(--text3)" id="aiStatus"></span>
+      </div>
+    </div>
+
+    <!-- 生成結果 -->
+    <div id="aiResults" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem">生成結果</div>
+        <div style="display:flex;gap:.5rem">
+          <button class="btn btn-outline btn-sm" onclick="AIAssist.copyAll()">📋 全コピー</button>
+          <button class="btn btn-outline btn-sm" onclick="AIAssist.applyToUpload()">📤 アップロード欄に反映</button>
+        </div>
+      </div>
+      <div id="aiResultCards"></div>
+    </div>
+  </div>
+
+  <!-- ── ANALYTICS TAB ── -->
+  <div class="tab-pane" id="pane-analytics">
+    <div class="page-head">
+      <h1 class="page-title">分析・レポート</h1>
+      <p class="page-sub">投稿パフォーマンスを記録してクライアントレポートを生成</p>
+    </div>
+
+    <!-- KPI サマリー -->
+    <div class="kpi-grid" id="kpiGrid">
+      <div class="kpi-card"><div class="kpi-val" id="kpiViews">-</div><div class="kpi-label">総再生数</div></div>
+      <div class="kpi-card"><div class="kpi-val" id="kpiLikes">-</div><div class="kpi-label">総いいね</div></div>
+      <div class="kpi-card"><div class="kpi-val" id="kpiEng">-</div><div class="kpi-label">平均エンゲージメント率</div></div>
+      <div class="kpi-card"><div class="kpi-val" id="kpiPosts">-</div><div class="kpi-label">記録済み投稿数</div></div>
+    </div>
+
+    <!-- 投稿を記録 -->
+    <div class="card">
+      <div class="card-label" style="display:flex;justify-content:space-between;align-items:center">
+        ✏️ 投稿パフォーマンスを記録
+        <button class="btn btn-outline btn-sm" onclick="Analytics.showAddPost()">+ 追加</button>
+      </div>
+
+      <div id="analyticsAddForm" style="display:none">
+        <div class="ai-input-grid" style="margin-top:1rem">
+          <div class="form-group">
+            <label class="form-label">投稿日</label>
+            <input type="date" class="form-input" id="aDate">
+          </div>
+          <div class="form-group">
+            <label class="form-label">プラットフォーム</label>
+            <select class="form-input" id="aPlatform">
+              <option value="tiktok">🎵 TikTok</option>
+              <option value="instagram">📷 Instagram</option>
+              <option value="youtube">▶️ YouTube</option>
+              <option value="twitter">𝕏 X/Twitter</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">タイトル/内容</label>
+            <input type="text" class="form-input" id="aTitle" placeholder="投稿タイトル">
+          </div>
+          <div class="form-group">
+            <label class="form-label">クライアント名</label>
+            <input type="text" class="form-input" id="aClient" placeholder="例: クライアントA">
+          </div>
+          <div class="form-group">
+            <label class="form-label">再生数 / インプレッション</label>
+            <input type="number" class="form-input" id="aViews" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">いいね</label>
+            <input type="number" class="form-input" id="aLikes" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">コメント</label>
+            <input type="number" class="form-input" id="aComments" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">保存 / シェア</label>
+            <input type="number" class="form-input" id="aSaves" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">フォロワー増減</label>
+            <input type="number" class="form-input" id="aFollowers" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">投稿URL</label>
+            <input type="url" class="form-input" id="aUrl" placeholder="https://...">
+          </div>
+        </div>
+        <div style="display:flex;gap:.5rem;margin-top:.5rem">
+          <button class="btn btn-primary btn-sm" onclick="Analytics.addPost()">記録する</button>
+          <button class="btn btn-outline btn-sm" onclick="Analytics.hideForm()">キャンセル</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- クライアントフィルタ -->
+    <div class="card">
+      <div class="card-label" style="display:flex;justify-content:space-between;align-items:center">
+        📋 投稿一覧
+        <div style="display:flex;gap:.5rem;align-items:center">
+          <input type="text" class="form-input" id="aClientFilter" placeholder="クライアント名で絞り込み" style="width:180px;padding:.35rem .7rem;font-size:.78rem" oninput="Analytics.render()">
+          <button class="btn btn-outline btn-sm" onclick="Analytics.exportCSV()">📥 CSV出力</button>
+        </div>
+      </div>
+      <div id="analyticsPostList"><p style="color:var(--text3);font-size:.8rem">投稿を記録すると一覧が表示されます</p></div>
+    </div>
   </div>
 
 </main>
@@ -1510,6 +1834,388 @@ const UI = {
 };
 
 // ═══════════════════════════════════════════════════════
+// RESEARCH
+// ═══════════════════════════════════════════════════════
+const Research = {
+  load(){
+    this.renderKeywords();
+    this.renderRefs();
+    this.renderCompetitors();
+    document.querySelectorAll('.ref-filter-btn').forEach(b=>{
+      b.addEventListener('click',()=>{
+        document.querySelectorAll('.ref-filter-btn').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        this.renderRefs(b.dataset.filter);
+      });
+    });
+  },
+
+  // ── Keywords ──
+  addKeyword(){
+    const kw=prompt('追跡するキーワードを入力:');
+    if(!kw||!kw.trim()) return;
+    const list=Store.get('research_keywords',[]);
+    if(!list.includes(kw.trim())) list.push(kw.trim());
+    Store.set('research_keywords',list);
+    this.renderKeywords();
+  },
+  removeKeyword(kw){
+    Store.set('research_keywords',Store.get('research_keywords',[]).filter(k=>k!==kw));
+    this.renderKeywords();
+  },
+  renderKeywords(){
+    const el=document.getElementById('keywordList');
+    if(!el) return;
+    const list=Store.get('research_keywords',[]);
+    if(!list.length){el.innerHTML='<p style="color:var(--text3);font-size:.8rem">追跡したいキーワードを追加してください</p>';return;}
+    el.innerHTML=list.map(kw=>`
+      <span class="keyword-chip">${kw}
+        <span class="kw-links">
+          <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(kw)}" target="_blank" title="YouTube検索">▶</a>
+          <a href="https://twitter.com/search?q=${encodeURIComponent(kw)}" target="_blank" title="X検索">𝕏</a>
+          <a href="https://www.tiktok.com/search?q=${encodeURIComponent(kw)}" target="_blank" title="TikTok検索">♪</a>
+          <a href="https://trends.google.co.jp/trends/explore?q=${encodeURIComponent(kw)}&geo=JP" target="_blank" title="Googleトレンド">↗</a>
+        </span>
+        <button onclick="Research.removeKeyword('${kw.replace(/'/g,"\\'")}');event.stopPropagation()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:.7rem;margin-left:.2rem">✕</button>
+      </span>`).join('');
+  },
+
+  // ── References ──
+  showAddRef(){
+    const url=prompt('参考コンテンツのURLを入力:');
+    if(!url) return;
+    const note=prompt('メモ（ポイント・なぜ参考にしたか）:') || '';
+    const platform=prompt('プラットフォーム（youtube/tiktok/instagram/twitter/other）:') || 'other';
+    const tags=(prompt('タグ（カンマ区切り）:') || '').split(',').map(t=>t.trim()).filter(Boolean);
+    const refs=Store.get('research_refs',[]);
+    refs.unshift({id:'r'+Date.now(),url,note,platform,tags,at:Date.now()});
+    Store.set('research_refs',refs);
+    this.renderRefs();
+    Toast.show('参考をストックしました','success');
+  },
+  removeRef(id){
+    Store.set('research_refs',Store.get('research_refs',[]).filter(r=>r.id!==id));
+    this.renderRefs();
+  },
+  renderRefs(filter='all'){
+    const el=document.getElementById('refList');
+    if(!el) return;
+    let refs=Store.get('research_refs',[]);
+    if(filter&&filter!=='all') refs=refs.filter(r=>r.platform===filter);
+    if(!refs.length){el.innerHTML='<p style="color:var(--text3);font-size:.8rem;padding:.5rem 0">参考にしたいコンテンツのURLをストックしましょう</p>';return;}
+    const icons={youtube:'▶️',tiktok:'🎵',instagram:'📷',twitter:'𝕏',other:'🔗'};
+    el.innerHTML=refs.map(r=>`
+      <div class="ref-card">
+        <div style="font-size:1.3rem">${icons[r.platform]||'🔗'}</div>
+        <div class="ref-card-info">
+          <div class="ref-card-title"><a href="${r.url}" target="_blank" style="color:var(--green)">${r.url.slice(0,60)}${r.url.length>60?'...':''}</a></div>
+          ${r.note?`<div class="ref-card-note">${r.note}</div>`:''}
+          <div class="ref-card-meta">${new Date(r.at).toLocaleDateString('ja-JP')}${r.tags.length?' · '+r.tags.map(t=>'#'+t).join(' '):''}</div>
+        </div>
+        <button class="analytics-del" onclick="Research.removeRef('${r.id}')">✕</button>
+      </div>`).join('');
+  },
+
+  // ── Competitors ──
+  showAddCompetitor(){
+    const name=prompt('アカウント名:');
+    if(!name) return;
+    const url=prompt('アカウントURL:') || '';
+    const platform=prompt('プラットフォーム（youtube/tiktok/instagram/twitter）:') || 'other';
+    const note=prompt('メモ（投稿頻度・スタイル等）:') || '';
+    const list=Store.get('research_competitors',[]);
+    list.unshift({id:'c'+Date.now(),name,url,platform,note,at:Date.now()});
+    Store.set('research_competitors',list);
+    this.renderCompetitors();
+    Toast.show('競合を登録しました','success');
+  },
+  removeCompetitor(id){
+    Store.set('research_competitors',Store.get('research_competitors',[]).filter(c=>c.id!==id));
+    this.renderCompetitors();
+  },
+  renderCompetitors(){
+    const el=document.getElementById('competitorList');
+    if(!el) return;
+    const list=Store.get('research_competitors',[]);
+    if(!list.length){el.innerHTML='<p style="color:var(--text3);font-size:.8rem">競合・参考アカウントを登録してモニタリング</p>';return;}
+    const icons={youtube:'▶️',tiktok:'🎵',instagram:'📷',twitter:'𝕏',other:'🔗'};
+    el.innerHTML=list.map(c=>`
+      <div class="comp-card">
+        <div style="font-size:1.2rem">${icons[c.platform]||'🔗'}</div>
+        <div class="comp-info">
+          <div class="comp-name">${c.url?`<a href="${c.url}" target="_blank" style="color:var(--green)">${c.name}</a>`:c.name}</div>
+          ${c.note?`<div class="comp-meta">${c.note}</div>`:''}
+          <div class="comp-meta">${new Date(c.at).toLocaleDateString('ja-JP')}</div>
+        </div>
+        <button class="analytics-del" onclick="Research.removeCompetitor('${c.id}')">✕</button>
+      </div>`).join('');
+  },
+};
+
+// ═══════════════════════════════════════════════════════
+// AI ASSIST
+// ═══════════════════════════════════════════════════════
+const AIAssist = {
+  lastResult: null,
+
+  async generate(){
+    const apiKey=Settings.get('anthropic_api_key');
+    if(!apiKey){
+      document.getElementById('ai-api-warn').style.display='flex';
+      Toast.show('設定タブにAnthropic API Keyを入力してください','error');
+      return;
+    }
+    const topic=document.getElementById('aiTopic').value.trim();
+    if(!topic){Toast.show('トピックを入力してください','error');return;}
+
+    const niche=document.getElementById('aiNiche').value.trim();
+    const tone=document.getElementById('aiTone').value;
+    const target=document.getElementById('aiTarget').value.trim();
+    const message=document.getElementById('aiMessage').value.trim();
+    const lang=document.getElementById('aiLang').value;
+    const platforms=[...document.querySelectorAll('.ai-plat-check input:checked')].map(c=>c.value);
+    if(!platforms.length){Toast.show('プラットフォームを1つ以上選択してください','error');return;}
+
+    const toneMap={casual:'カジュアル・親しみやすい',professional:'プロフェッショナル・信頼感',
+      educational:'教育的・わかりやすい解説',entertaining:'エンタメ・バズ狙い・面白い',emotional:'感情的・共感・心に刺さる'};
+    const langNote=lang==='ja'?'日本語のみ':lang==='en'?'英語のみ':'日本語と英語両方（日本語メイン）';
+
+    const prompt=`あなたはSNSマーケティングの超一流専門家です。日本市場に特化しています。
+以下の情報をもとに、各SNSプラットフォームに最適化されたキャプションを生成してください。
+
+## コンテンツ情報
+- トピック: ${topic}
+- ニッチ/業種: ${niche||'未指定'}
+- トーン: ${toneMap[tone]}
+- ターゲット層: ${target||'一般'}
+- キーメッセージ: ${message||'なし'}
+- 言語: ${langNote}
+
+## 必須出力形式（純粋なJSONのみ、コードブロック不要）
+{
+  ${platforms.includes('tiktok')?`"tiktok": {"caption": "TikTok用キャプション（150字以内、フック重要）","hooks": ["フック案1","フック案2","フック案3"],"hashtags": ["タグ1","タグ2"],"tip": "バズるポイント"},`:''}
+  ${platforms.includes('instagram')?`"instagram": {"caption": "Instagram用キャプション（改行含むリッチテキスト）","hashtags": ["タグ1",…30個まで],"tip": "投稿のコツ"},`:''}
+  ${platforms.includes('youtube')?`"youtube": {"title": "YouTube動画タイトル（SEO最適化・60字以内）","description": "動画説明文（概要欄、改行あり、キーワード含む）","tags": ["タグ1","タグ2"],"tip": "再生数を伸ばすポイント"},`:''}
+  ${platforms.includes('twitter')?`"twitter": {"text": "Xポスト（280字以内、インパクト重視）","hashtags": ["タグ1","タグ2"],"tip": "RT・いいねを増やすコツ"}`:''}
+}`;
+
+    const btn=document.getElementById('aiGenerateBtn');
+    const label=document.getElementById('aiGenLabel');
+    const status=document.getElementById('aiStatus');
+    btn.disabled=true;
+    label.innerHTML='<div class="spinner"></div> 生成中…';
+    status.textContent='';
+
+    try{
+      const res=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'x-api-key':apiKey,
+          'anthropic-version':'2023-06-01',
+          'anthropic-dangerous-direct-browser-access':'true',
+        },
+        body:JSON.stringify({
+          model:'claude-haiku-4-5-20251001',
+          max_tokens:2048,
+          messages:[{role:'user',content:prompt}],
+        }),
+      });
+
+      if(!res.ok){
+        const e=await res.json();
+        throw new Error(e.error?.message||'APIエラー: '+res.status);
+      }
+      const data=await res.json();
+      const text=data.content[0].text.trim();
+
+      let parsed;
+      try{
+        const jsonStr=text.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+        parsed=JSON.parse(jsonStr);
+      }catch{
+        throw new Error('AIの返答をパースできませんでした。再試行してください。');
+      }
+
+      this.lastResult={parsed,topic,platforms};
+      this.renderResults(parsed,platforms);
+      status.textContent=`✅ ${new Date().toLocaleTimeString('ja-JP')} 生成完了`;
+      Toast.show('キャプション生成完了！','success');
+
+    }catch(e){
+      Toast.show('生成失敗: '+e.message,'error',6000);
+      status.textContent='❌ '+e.message;
+    }finally{
+      btn.disabled=false;
+      label.textContent='🤖 キャプション生成';
+    }
+  },
+
+  renderResults(parsed,platforms){
+    const container=document.getElementById('aiResultCards');
+    const platInfo={
+      tiktok:{icon:'🎵',name:'TikTok',color:'#69c9d0'},
+      instagram:{icon:'📷',name:'Instagram',color:'#e1306c'},
+      youtube:{icon:'▶️',name:'YouTube',color:'#ff0000'},
+      twitter:{icon:'𝕏',name:'X (Twitter)',color:'#1d9bf0'},
+    };
+    container.innerHTML=platforms.filter(p=>parsed[p]).map(pid=>{
+      const p=platInfo[pid];const d=parsed[pid];
+      const hasTitle=d.title;
+      const mainText=d.text||d.caption||d.description||'';
+      const tags=(d.hashtags||d.tags||[]).map(t=>`<span class="ai-tag">#${t}</span>`).join('');
+      const hooks=(d.hooks||[]).map(h=>`<span class="ai-hook">"${h}"</span>`).join('');
+      return `
+        <div class="ai-result-card">
+          <div class="ai-result-header">
+            <div class="ai-result-plat" style="color:${p.color}">${p.icon} ${p.name}</div>
+            <div class="ai-result-actions">
+              <button class="btn btn-outline btn-sm" onclick="AIAssist.copyPlatform('${pid}')">📋 コピー</button>
+            </div>
+          </div>
+          ${hasTitle?`<div class="ai-field"><div class="ai-field-label">TITLE</div><div class="ai-field-val" style="font-weight:600">${d.title}</div></div>`:''}
+          <div class="ai-field"><div class="ai-field-label">${pid==='youtube'?'DESCRIPTION':'CAPTION'}</div><div class="ai-field-val">${mainText}</div></div>
+          ${hooks?`<div class="ai-field"><div class="ai-field-label">HOOK IDEAS</div><div>${hooks}</div></div>`:''}
+          ${tags?`<div class="ai-field"><div class="ai-field-label">HASHTAGS</div><div class="ai-tags">${tags}</div></div>`:''}
+          ${d.tip?`<div class="ai-field"><div class="ai-field-label">TIPS</div><div style="font-size:.78rem;color:var(--yellow)">💡 ${d.tip}</div></div>`:''}
+        </div>`;
+    }).join('');
+    document.getElementById('aiResults').style.display='block';
+  },
+
+  copyPlatform(pid){
+    const d=this.lastResult?.parsed?.[pid];if(!d) return;
+    const text=[d.title,d.text||d.caption||d.description,(d.hashtags||d.tags||[]).map(t=>'#'+t).join(' ')].filter(Boolean).join('\n\n');
+    navigator.clipboard.writeText(text).then(()=>Toast.show(`${pid}のキャプションをコピーしました`,'success'));
+  },
+
+  copyAll(){
+    if(!this.lastResult) return;
+    const platInfo={tiktok:'TikTok',instagram:'Instagram',youtube:'YouTube',twitter:'X/Twitter'};
+    const text=Object.entries(this.lastResult.parsed).map(([pid,d])=>{
+      const parts=[`【${platInfo[pid]||pid}】`];
+      if(d.title) parts.push('タイトル: '+d.title);
+      if(d.text||d.caption||d.description) parts.push(d.text||d.caption||d.description);
+      if(d.hashtags||d.tags) parts.push((d.hashtags||d.tags).map(t=>'#'+t).join(' '));
+      return parts.join('\n');
+    }).join('\n\n---\n\n');
+    navigator.clipboard.writeText(text).then(()=>Toast.show('全プラットフォームのキャプションをコピーしました','success'));
+  },
+
+  applyToUpload(){
+    if(!this.lastResult) return;
+    const d=this.lastResult.parsed;
+    const topic=this.lastResult.topic;
+    const pref=['youtube','tiktok','instagram','twitter'].find(p=>d[p]);
+    if(!pref) return;
+    const pd=d[pref];
+    document.getElementById('postTitle').value=pd.title||topic;
+    document.getElementById('postCaption').value=pd.caption||pd.description||pd.text||'';
+    document.getElementById('captionCount').textContent=(pd.caption||pd.description||pd.text||'').length+' / 2200';
+    const tags=(pd.hashtags||pd.tags||[]);
+    UI.tags=tags;UI.renderTags();
+    document.getElementById('tagCount').textContent=tags.length+' タグ';
+    UI.switchTab('upload');
+    Toast.show('アップロード欄に反映しました','success');
+  },
+};
+
+// ═══════════════════════════════════════════════════════
+// ANALYTICS
+// ═══════════════════════════════════════════════════════
+const Analytics = {
+  showAddPost(){
+    const f=document.getElementById('analyticsAddForm');
+    f.style.display=f.style.display==='none'?'block':'none';
+    if(f.style.display==='block') document.getElementById('aDate').value=new Date().toISOString().split('T')[0];
+  },
+  hideForm(){document.getElementById('analyticsAddForm').style.display='none';},
+
+  addPost(){
+    const d={
+      id:'p'+Date.now(),
+      date:document.getElementById('aDate').value,
+      platform:document.getElementById('aPlatform').value,
+      title:document.getElementById('aTitle').value.trim()||'無題',
+      client:document.getElementById('aClient').value.trim()||'未設定',
+      views:parseInt(document.getElementById('aViews').value)||0,
+      likes:parseInt(document.getElementById('aLikes').value)||0,
+      comments:parseInt(document.getElementById('aComments').value)||0,
+      saves:parseInt(document.getElementById('aSaves').value)||0,
+      followers:parseInt(document.getElementById('aFollowers').value)||0,
+      url:document.getElementById('aUrl').value.trim()||'',
+      at:Date.now(),
+    };
+    const posts=Store.get('analytics_posts',[]);
+    posts.unshift(d);
+    Store.set('analytics_posts',posts);
+    this.hideForm();
+    this.render();
+    Toast.show('投稿を記録しました','success');
+    ['aTitle','aClient','aViews','aLikes','aComments','aSaves','aFollowers','aUrl'].forEach(id=>{
+      const el=document.getElementById(id);if(el) el.value='';
+    });
+  },
+
+  removePost(id){
+    Store.set('analytics_posts',Store.get('analytics_posts',[]).filter(p=>p.id!==id));
+    this.render();
+  },
+
+  render(){
+    const posts=Store.get('analytics_posts',[]);
+    const filter=(document.getElementById('aClientFilter')?.value||'').trim().toLowerCase();
+    const filtered=filter?posts.filter(p=>p.client.toLowerCase().includes(filter)):posts;
+
+    // KPIs
+    const totalViews=filtered.reduce((s,p)=>s+p.views,0);
+    const totalLikes=filtered.reduce((s,p)=>s+p.likes,0);
+    const avgEng=filtered.length?filtered.reduce((s,p)=>{
+      const eng=p.views>0?((p.likes+p.comments+p.saves)/p.views*100):0;
+      return s+eng;
+    },0)/filtered.length:0;
+    const fmt=n=>n>=10000?(n/10000).toFixed(1)+'万':n>=1000?(n/1000).toFixed(1)+'K':n.toString();
+    document.getElementById('kpiViews').textContent=fmt(totalViews);
+    document.getElementById('kpiLikes').textContent=fmt(totalLikes);
+    document.getElementById('kpiEng').textContent=avgEng.toFixed(1)+'%';
+    document.getElementById('kpiPosts').textContent=filtered.length;
+
+    // Post list
+    const el=document.getElementById('analyticsPostList');
+    if(!filtered.length){el.innerHTML='<p style="color:var(--text3);font-size:.8rem">投稿を記録すると一覧が表示されます</p>';return;}
+    const icons={tiktok:'🎵',instagram:'📷',youtube:'▶️',twitter:'𝕏'};
+    const eng=p=>p.views>0?((p.likes+p.comments+p.saves)/p.views*100).toFixed(1)+'%':'—';
+    el.innerHTML=filtered.map(p=>`
+      <div class="analytics-row">
+        <div class="ar-plat">${icons[p.platform]||'📱'}</div>
+        <div>
+          <div class="ar-title">${p.url?`<a href="${p.url}" target="_blank" style="color:var(--green)">${p.title}</a>`:p.title}</div>
+          <div class="ar-date">${p.client} · ${p.date}</div>
+        </div>
+        <div class="ar-stat">${fmt(p.views)}<span>再生</span></div>
+        <div class="ar-stat">${fmt(p.likes)}<span>いいね</span></div>
+        <div class="ar-stat">${eng(p)}<span>エンゲージ</span></div>
+        <div class="ar-stat">${p.followers>=0?'+':''} ${p.followers}<span>フォロワー</span></div>
+        <button class="analytics-del" onclick="Analytics.removePost('${p.id}')">✕</button>
+      </div>`).join('');
+  },
+
+  exportCSV(){
+    const posts=Store.get('analytics_posts',[]);
+    if(!posts.length){Toast.show('記録がありません','error');return;}
+    const header='日付,クライアント,プラットフォーム,タイトル,再生数,いいね,コメント,保存,フォロワー増減,URL';
+    const rows=posts.map(p=>[p.date,p.client,p.platform,`"${p.title}"`,p.views,p.likes,p.comments,p.saves,p.followers,p.url].join(','));
+    const csv='﻿'+header+'\n'+rows.join('\n');
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=`hydra_analytics_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    Toast.show('CSVをダウンロードしました','success');
+  },
+};
+
+// ═══════════════════════════════════════════════════════
 // BOOT
 // ═══════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded',()=>{
@@ -1517,6 +2223,22 @@ document.addEventListener('DOMContentLoaded',()=>{
   UI.init();
   Queue.load();
   OAuth.handleCallback();
+
+  // Research tab init (on first visit)
+  document.querySelector('[data-tab="research"]').addEventListener('click',()=>{
+    Research.load();
+  });
+
+  // Analytics tab init
+  document.querySelector('[data-tab="analytics"]').addEventListener('click',()=>{
+    Analytics.render();
+  });
+
+  // AI tab - check API key
+  document.querySelector('[data-tab="ai"]').addEventListener('click',()=>{
+    const hasKey=!!Settings.get('anthropic_api_key');
+    document.getElementById('ai-api-warn').style.display=hasKey?'none':'flex';
+  });
 });
 </script>
 </body>
