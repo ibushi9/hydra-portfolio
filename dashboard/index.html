@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hydra Cabaret OS — 予定・顧客管理</title>
+<meta name="description" content="キャバクラ運営のための予定共有・顧客管理ダッシュボード。LINE連携 × AIで予定を自動管理。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;700&family=Syne:wght@600;700;800&family=Noto+Sans+JP:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gneon:#00ff88;--g:#16a34a;--gd:#14532d;
+  --blk:#050505;--blk2:#0a0a0a;--blk3:#111;--blk4:#161616;--blk5:#1c1c1c;
+  --w:#fff;--g300:#222;--g400:#555;--g500:#888;--g600:#aaa;--g700:#ccc;
+  --pink:#ff4d8d;--amber:#ffb020;--blue:#4da3ff;
+  --line:#06c755;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--blk);color:var(--w);line-height:1.6;-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font-family:inherit}
+button{cursor:pointer}
+::selection{background:var(--gneon);color:#000}
+.mono{font-family:'Space Mono',monospace}
+
+/* ── SCREENS ── */
+.screen{display:none}
+.screen.active{display:block}
+
+/* ── LOGIN ── */
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 50% 0%,rgba(0,255,136,.07),transparent 60%)}
+.login-box{width:100%;max-width:440px;text-align:center}
+.login-logo{font-family:'EB Garamond',serif;font-size:44px;font-weight:700;letter-spacing:8px;margin-bottom:4px}
+.login-logo span{color:var(--gneon)}
+.login-tag{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--g500);text-transform:uppercase;margin-bottom:40px}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+.role-card{background:var(--blk3);border:1px solid var(--g300);border-radius:16px;padding:28px 18px;transition:.25s;text-align:center}
+.role-card:hover{border-color:var(--gneon);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,255,136,.12)}
+.role-ico{font-size:34px;margin-bottom:10px}
+.role-name{font-weight:700;font-size:17px;margin-bottom:4px}
+.role-desc{font-size:11px;color:var(--g500);line-height:1.5}
+.login-cast-pick{display:none;margin-top:8px}
+.login-cast-pick.show{display:block}
+.login-cast-pick label{display:block;font-size:12px;color:var(--g500);margin-bottom:8px}
+select.cast-select{width:100%;padding:12px;background:var(--blk4);border:1px solid var(--g300);border-radius:10px;color:var(--w);font-size:14px}
+.login-back{margin-top:18px;background:none;border:none;color:var(--g500);font-size:12px}
+.login-back:hover{color:var(--gneon)}
+
+/* ── APP SHELL ── */
+#app{min-height:100vh;display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;z-index:50;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--g300)}
+.tb-left{display:flex;align-items:center;gap:12px}
+.tb-logo{font-family:'EB Garamond',serif;font-size:20px;font-weight:700;letter-spacing:3px}
+.tb-logo span{color:var(--gneon)}
+.role-badge{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;padding:4px 10px;border-radius:20px;text-transform:uppercase}
+.role-badge.boy{background:rgba(77,163,255,.15);color:var(--blue);border:1px solid rgba(77,163,255,.3)}
+.role-badge.cast{background:rgba(255,77,141,.15);color:var(--pink);border:1px solid rgba(255,77,141,.3)}
+.tb-right{display:flex;align-items:center;gap:10px}
+.tb-user{font-size:13px;color:var(--g600)}
+.tb-user b{color:var(--w)}
+.btn-ghost{background:none;border:1px solid var(--g300);color:var(--g600);padding:7px 12px;border-radius:8px;font-size:12px;transition:.2s}
+.btn-ghost:hover{border-color:var(--gneon);color:var(--gneon)}
+
+.layout{flex:1;display:flex}
+.sidebar{width:210px;flex-shrink:0;border-right:1px solid var(--g300);padding:18px 12px;background:var(--blk2)}
+.nav-item{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:10px;color:var(--g600);font-size:14px;font-weight:500;transition:.18s;margin-bottom:4px}
+.nav-item:hover{background:var(--blk4);color:var(--w)}
+.nav-item.active{background:rgba(0,255,136,.1);color:var(--gneon)}
+.nav-item .ni-ico{font-size:17px;width:20px;text-align:center}
+.nav-badge{margin-left:auto;background:var(--pink);color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 5px}
+.main{flex:1;padding:24px;overflow:auto;max-width:100%}
+
+/* ── TABS (mobile) ── */
+.mobtabs{display:none}
+
+/* ── GENERIC ── */
+.page{display:none}
+.page.active{display:block;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:22px}
+.page-title{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.5px}
+.page-sub{font-size:12px;color:var(--g500);margin-top:2px}
+.card{background:var(--blk3);border:1px solid var(--g300);border-radius:14px;padding:18px}
+.card+.card{margin-top:16px}
+.card-title{font-size:13px;font-weight:700;letter-spacing:1px;color:var(--g600);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+
+.btn{background:var(--gneon);color:#000;border:none;font-weight:700;padding:10px 16px;border-radius:9px;font-size:13px;transition:.2s;display:inline-flex;align-items:center;gap:7px}
+.btn:hover{box-shadow:0 6px 20px rgba(0,255,136,.3);transform:translateY(-1px)}
+.btn.sm{padding:7px 12px;font-size:12px}
+.btn.danger{background:var(--pink);color:#fff}
+.btn.line{background:var(--line);color:#fff}
+.btn-x{background:none;border:1px solid var(--g300);color:var(--g500);width:30px;height:30px;border-radius:7px;font-size:14px;transition:.2s}
+.btn-x:hover{border-color:var(--pink);color:var(--pink)}
+
+input,textarea,select{background:var(--blk4);border:1px solid var(--g300);border-radius:9px;color:var(--w);padding:10px 12px;font-size:13px;width:100%}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gneon)}
+label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;letter-spacing:.5px}
+.field+.field{margin-top:12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ── STAT CARDS ── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:20px}
+.stat{background:linear-gradient(160deg,var(--blk4),var(--blk3));border:1px solid var(--g300);border-radius:14px;padding:16px 18px}
+.stat-n{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;line-height:1}
+.stat-l{font-size:11px;color:var(--g500);margin-top:6px;letter-spacing:1px}
+.stat.accent .stat-n{color:var(--gneon)}
+
+/* ── SCHEDULE BOARD ── */
+.board-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.daypick{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.day-chip{flex-shrink:0;background:var(--blk4);border:1px solid var(--g300);border-radius:11px;padding:8px 12px;text-align:center;min-width:62px;transition:.18s}
+.day-chip:hover{border-color:var(--g500)}
+.day-chip.active{background:var(--gneon);color:#000;border-color:var(--gneon)}
+.day-chip .dc-dow{font-size:10px;opacity:.7}
+.day-chip .dc-d{font-size:18px;font-weight:700;font-family:'Space Mono',monospace}
+.day-chip.active .dc-dow{opacity:.9}
+
+.sched-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.sched-card{background:var(--blk4);border:1px solid var(--g300);border-radius:13px;padding:14px;position:relative;transition:.2s}
+.sched-card:hover{border-color:var(--g500)}
+.sched-card.off{opacity:.55}
+.sc-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--pink),#a8326b);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0}
+.sc-name{font-weight:700;font-size:15px}
+.sc-time{font-family:'Space Mono',monospace;font-size:17px;font-weight:700;color:var(--gneon)}
+.sc-time.off{color:var(--g500)}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.5px}
+.badge.on{background:rgba(0,255,136,.15);color:var(--gneon)}
+.badge.late{background:rgba(255,176,32,.15);color:var(--amber)}
+.badge.off{background:rgba(136,136,136,.15);color:var(--g500)}
+.sc-note{font-size:12px;color:var(--g600);margin-top:8px;border-top:1px solid var(--g300);padding-top:8px}
+.sc-actions{display:flex;gap:6px;margin-top:10px}
+
+/* ── LINE INBOX ── */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.msg{display:flex;gap:11px;padding:13px;border-radius:11px;background:var(--blk4);border:1px solid var(--g300);margin-bottom:10px;transition:.2s}
+.msg.handled{opacity:.5}
+.msg-av{width:36px;height:36px;border-radius:10px;background:var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.msg-body{flex:1;min-width:0}
+.msg-from{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+.msg-time{font-size:10px;color:var(--g500);font-weight:400;font-family:'Space Mono',monospace}
+.msg-text{font-size:13px;color:var(--g700);margin-top:3px;white-space:pre-wrap;word-break:break-word}
+.ai-chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--gneon);background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.25);padding:2px 8px;border-radius:20px;margin-top:8px}
+.ai-parse{margin-top:9px;background:var(--blk2);border:1px dashed var(--gd);border-radius:9px;padding:10px}
+.ai-parse-row{font-size:12px;color:var(--g600);display:flex;gap:8px;align-items:center}
+.ai-parse-row b{color:var(--w)}
+.msg-actions{display:flex;gap:6px;margin-top:9px}
+
+/* ── AI COMMAND BAR ── */
+.ai-bar{background:linear-gradient(135deg,rgba(0,255,136,.06),var(--blk3));border:1px solid rgba(0,255,136,.25);border-radius:14px;padding:16px;margin-bottom:20px}
+.ai-bar-head{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:700;margin-bottom:11px}
+.ai-orb{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 30% 30%,var(--gneon),var(--g));box-shadow:0 0 14px rgba(0,255,136,.6);animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 10px rgba(0,255,136,.4)}50%{box-shadow:0 0 20px rgba(0,255,136,.8)}}
+.ai-input-wrap{display:flex;gap:9px}
+.ai-input-wrap input{flex:1}
+.ai-hint{font-size:11px;color:var(--g500);margin-top:9px}
+.ai-hint b{color:var(--g700)}
+.ai-log{margin-top:12px}
+.ai-log-item{font-size:12px;color:var(--g600);padding:8px 11px;background:var(--blk2);border-radius:8px;border-left:2px solid var(--gneon);margin-top:7px}
+.ai-log-item .you{color:var(--w)}
+
+/* ── CUSTOMERS ── */
+.cust-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.cust-card{background:var(--blk4);border:1px solid var(--g300);border-radius:13px;padding:15px;transition:.2s}
+.cust-card:hover{border-color:var(--g500);transform:translateY(-2px)}
+.cust-top{display:flex;align-items:center;gap:11px;margin-bottom:11px}
+.cust-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;font-size:16px}
+.cust-name{font-weight:700;font-size:15px}
+.cust-line{font-size:11px;color:var(--g500);display:flex;align-items:center;gap:4px}
+.rank{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:auto;flex-shrink:0}
+.rank.vip{background:linear-gradient(135deg,#ffd700,#b8860b);color:#000}
+.rank.gold{background:rgba(255,176,32,.18);color:var(--amber)}
+.rank.reg{background:rgba(77,163,255,.16);color:var(--blue)}
+.rank.new{background:rgba(0,255,136,.14);color:var(--gneon)}
+.cust-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:11px 0}
+.cm{background:var(--blk2);border-radius:8px;padding:7px 9px}
+.cm-l{font-size:9px;color:var(--g500);letter-spacing:.5px}
+.cm-v{font-size:13px;font-weight:700;margin-top:1px}
+.cust-note{font-size:12px;color:var(--g600);background:var(--blk2);border-radius:8px;padding:8px 10px;min-height:38px}
+.cust-actions{display:flex;gap:6px;margin-top:11px}
+
+/* ── MODAL ── */
+.modal-bg{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px}
+.modal-bg.show{display:flex}
+.modal{background:var(--blk3);border:1px solid var(--g300);border-radius:16px;width:100%;max-width:440px;max-height:90vh;overflow:auto;padding:22px}
+.modal-title{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;margin-bottom:16px}
+.modal-actions{display:flex;gap:10px;margin-top:18px}
+.modal-actions .btn{flex:1;justify-content:center}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120px);z-index:300;background:var(--blk5);border:1px solid var(--gneon);color:var(--w);padding:12px 20px;border-radius:12px;font-size:13px;font-weight:500;box-shadow:0 10px 40px rgba(0,0,0,.5);transition:.4s cubic-bezier(.2,.8,.2,1);max-width:90vw}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast b{color:var(--gneon)}
+
+.empty{text-align:center;padding:40px 20px;color:var(--g500);font-size:13px}
+.empty .e-ico{font-size:38px;margin-bottom:10px;opacity:.4}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--gneon);box-shadow:0 0 8px var(--gneon);animation:pulse 2s infinite;display:inline-block;margin-right:5px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:860px){
+  .sidebar{display:none}
+  .main{padding:16px 14px 90px}
+  .split{grid-template-columns:1fr}
+  .row2{grid-template-columns:1fr}
+  .mobtabs{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:60;background:rgba(8,8,8,.96);backdrop-filter:blur(20px);border-top:1px solid var(--g300);padding:8px 6px;justify-content:space-around}
+  .mob-tab{flex:1;background:none;border:none;color:var(--g500);font-size:10px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px;position:relative}
+  .mob-tab .mt-ico{font-size:19px}
+  .mob-tab.active{color:var(--gneon)}
+  .mob-tab .nav-badge{position:absolute;top:-2px;right:18%}
+  .page-title{font-size:22px}
+  .tb-user{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ════ LOGIN ════ -->
+<div id="login" class="screen active">
+  <div class="login-box">
+    <div class="login-logo">HYDRA<span>.</span></div>
+    <div class="login-tag">Cabaret OS — 予定 × 顧客 × AI</div>
+
+    <div id="roleStep">
+      <div class="role-grid">
+        <button class="role-card" onclick="pickBoy()">
+          <div class="role-ico">🤵</div>
+          <div class="role-name">ボーイ / 店長</div>
+          <div class="role-desc">全キャストの予定を統括<br>LINE受信・AI予定管理</div>
+        </button>
+        <button class="role-card" onclick="showCastPick()">
+          <div class="role-ico">💁‍♀️</div>
+          <div class="role-name">キャスト</div>
+          <div class="role-desc">自分の出勤予定<br>担当顧客の管理</div>
+        </button>
+      </div>
+    </div>
+
+    <div id="castStep" class="login-cast-pick">
+      <label>ログインするキャストを選択</label>
+      <select id="castSelect" class="cast-select"></select>
+      <div style="margin-top:14px"><button class="btn" style="width:100%;justify-content:center" onclick="pickCast()">この名前でログイン →</button></div>
+      <button class="login-back" onclick="backToRole()">← 戻る</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ APP ════ -->
+<div id="app" class="screen">
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-logo">HYDRA<span>.</span></div>
+      <span id="roleBadge" class="role-badge boy">BOY</span>
+    </div>
+    <div class="tb-right">
+      <span class="tb-user"><span class="sync-dot"></span><b id="userName">—</b> でログイン中</span>
+      <button class="btn-ghost" onclick="logout()">ログアウト</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <nav class="sidebar" id="sidebar"></nav>
+
+    <main class="main">
+      <!-- ===== SCHEDULE ===== -->
+      <section class="page active" data-page="schedule">
+        <div class="page-head">
+          <div>
+            <div class="page-title">予定ボード</div>
+            <div class="page-sub" id="schedSub">リアルタイム同期 — 全キャストの出勤状況</div>
+          </div>
+          <button class="btn" id="addSchedBtn" onclick="openSchedModal()">＋ 予定を追加</button>
+        </div>
+
+        <div class="board-controls">
+          <div class="daypick" id="dayPick"></div>
+        </div>
+
+        <div class="stats" id="schedStats"></div>
+        <div class="sched-grid" id="schedGrid"></div>
+      </section>
+
+      <!-- ===== LINE INBOX (boy only) ===== -->
+      <section class="page" data-page="inbox">
+        <div class="page-head">
+          <div>
+            <div class="page-title">LINE 受信ボックス</div>
+            <div class="page-sub">キャストからのLINEをAIが解析 → ワンタップで予定に反映</div>
+          </div>
+        </div>
+
+        <div class="ai-bar">
+          <div class="ai-bar-head"><span class="ai-orb"></span>AIアシスタント — 自然文で予定を操作</div>
+          <div class="ai-input-wrap">
+            <input id="aiInput" placeholder="例: 明日のあやの予定を22時出勤に変更 / 土曜のみおを休みにして" onkeydown="if(event.key==='Enter')runAI()">
+            <button class="btn" onclick="runAI()">実行</button>
+          </div>
+          <div class="ai-hint">💡 <b>「◯◯を△時出勤」「◯曜の◯◯を休み」「◯◯の予定を削除」</b> のように話しかけてください</div>
+          <div class="ai-log" id="aiLog"></div>
+        </div>
+
+        <div class="card-title">📨 未処理のLINEメッセージ <span id="inboxCount" class="mono" style="color:var(--gneon);margin-left:auto"></span></div>
+        <div id="inboxList"></div>
+      </section>
+
+      <!-- ===== CUSTOMERS ===== -->
+      <section class="page" data-page="customers">
+        <div class="page-head">
+          <div>
+            <div class="page-title">顧客管理</div>
+            <div class="page-sub" id="custSub">担当顧客の来店・売上・好みを記録</div>
+          </div>
+          <button class="btn" onclick="openCustModal()">＋ 顧客を追加</button>
+        </div>
+        <div class="stats" id="custStats"></div>
+        <div class="cust-grid" id="custGrid"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- mobile tab bar -->
+  <nav class="mobtabs" id="mobtabs"></nav>
+</div>
+
+<!-- ════ MODALS ════ -->
+<div class="modal-bg" id="schedModal">
+  <div class="modal">
+    <div class="modal-title" id="schedModalTitle">予定を追加</div>
+    <div class="field" id="schedCastField">
+      <label class="fl">キャスト</label>
+      <select id="mCast"></select>
+    </div>
+    <div class="field">
+      <label class="fl">日付</label>
+      <input type="date" id="mDate">
+    </div>
+    <div class="field">
+      <label class="fl">出勤ステータス</label>
+      <select id="mStatus">
+        <option value="on">出勤</option>
+        <option value="late">遅れ / 途中出勤</option>
+        <option value="off">休み</option>
+      </select>
+    </div>
+    <div class="row2" id="mTimeRow">
+      <div class="field"><label class="fl">開始</label><input type="time" id="mStart" value="21:00"></div>
+      <div class="field"><label class="fl">退勤</label><input type="time" id="mEnd" value="02:00"></div>
+    </div>
+    <div class="field">
+      <label class="fl">メモ（同伴・本指名など）</label>
+      <input id="mNote" placeholder="例: 21時〜同伴あり">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" style="flex:1;border-radius:9px;padding:11px" onclick="closeModal('schedModal')">キャンセル</button>
+      <button class="btn" onclick="saveSched()">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="custModal">
+  <div class="modal">
+    <div class="modal-title" id="custModalTitle">顧客を追加</div>
+    <div class="field"><label class="fl">名前 / 源氏名</label><input id="cName" placeholder="例: 田中さん"></div>
+    <div class="field"><label class="fl">LINE名</label><input id="cLine" placeholder="例: たなか★"></div>
+    <div class="row2">
+      <div class="field"><label class="fl">ランク</label>
+        <select id="cRank"><option value="new">新規</option><option value="reg">常連</option><option value="gold">ゴールド</option><option value="vip">VIP</option></select>
+      </div>
+      <div class="field"><label class="fl">最終来店</label><input type="date" id="cLast"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label class="fl">累計売上（円）</label><input type="number" id="cSpend" placeholder="0"></div>
+      <div class="field"><label class="fl">誕生日</label><input id="cBday" placeholder="例: 5/12"></div>
+    </div>
+    <div class="field"><label class="fl">メモ（好み・ボトル・注意点）</label><textarea id="cNote" rows="2" placeholder="例: 焼酎ボトル / 緑茶割り。野球の話が好き。"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" style="flex:1;border-radius:9px;padding:11px" onclick="closeModal('custModal')">キャンセル</button>
+      <button class="btn" onclick="saveCust()">保存</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════
+   Hydra Cabaret OS — フロントエンド プロトタイプ
+   データは localStorage に保存し、storage イベントで
+   タブ間リアルタイム同期します（バックエンド不要）。
+   将来 LINE Messaging API / AI(LLM) / DB に差し替え可能。
+══════════════════════════════════════════ */
+const LS_KEY='hydraCabaretDB_v1';
+const DOW=['日','月','火','水','木','金','土'];
+
+/* ---- 初期シードデータ ---- */
+function seed(){
+  const today=new Date();
+  const d=(off)=>{const x=new Date(today);x.setDate(x.getDate()+off);return x.toISOString().slice(0,10);};
+  return {
+    casts:[
+      {id:'c1',name:'あや'},{id:'c2',name:'みお'},{id:'c3',name:'れな'},
+      {id:'c4',name:'さき'},{id:'c5',name:'ゆい'}
+    ],
+    schedules:[
+      {id:'s1',castId:'c1',date:d(0),status:'on',start:'21:00',end:'02:00',note:'21時〜同伴あり'},
+      {id:'s2',castId:'c2',date:d(0),status:'on',start:'20:00',end:'01:00',note:''},
+      {id:'s3',castId:'c3',date:d(0),status:'late',start:'23:30',end:'02:00',note:'本指名のため遅め'},
+      {id:'s4',castId:'c4',date:d(0),status:'off',start:'',end:'',note:''},
+      {id:'s5',castId:'c1',date:d(1),status:'on',start:'21:00',end:'02:00',note:''},
+      {id:'s6',castId:'c5',date:d(1),status:'on',start:'22:00',end:'02:00',note:'誕生日イベント'},
+    ],
+    customers:[
+      {id:'k1',castId:'c1',name:'田中さん',line:'たなか★',rank:'vip',last:d(-2),spend:480000,bday:'5/12',note:'焼酎ボトル / 緑茶割り。野球の話が好き。'},
+      {id:'k2',castId:'c1',name:'佐藤さん',line:'sato_h',rank:'gold',last:d(-9),spend:220000,bday:'11/3',note:'シャンパン好き。週末来店多め。'},
+      {id:'k3',castId:'c2',name:'鈴木社長',line:'suzuki',rank:'vip',last:d(-1),spend:910000,bday:'2/28',note:'大事な太客。個室希望。'},
+      {id:'k4',castId:'c3',name:'山本さん',line:'yama',rank:'reg',last:d(-15),spend:95000,bday:'8/8',note:'最近来店減。要フォロー連絡。'},
+    ],
+    lineMessages:[
+      {id:'m1',castId:'c1',from:'あや',text:'店長おはようございます！明日21時から出勤できます🙏',time:'12:04',handled:false},
+      {id:'m2',castId:'c3',from:'れな',text:'今日は本指名入ったので23時半くらいに行きます！',time:'13:21',handled:false},
+      {id:'m3',castId:'c4',from:'さき',text:'すみません、体調不良で今日お休みさせてください🙇‍♀️',time:'14:02',handled:false},
+      {id:'m4',castId:'c5',from:'ゆい',text:'土曜のバースデーイベント22時から入ります✨',time:'15:30',handled:false},
+    ],
+    aiLog:[]
+  };
+}
+
+/* ---- DB load/save + 同期 ---- */
+let DB=load();
+function load(){try{const r=localStorage.getItem(LS_KEY);if(r)return JSON.parse(r);}catch(e){}const s=seed();localStorage.setItem(LS_KEY,JSON.stringify(s));return s;}
+function save(){localStorage.setItem(LS_KEY,JSON.stringify(DB));}
+window.addEventListener('storage',e=>{if(e.key===LS_KEY){DB=load();renderAll();toast('🔄 他の端末の変更を同期しました');}});
+
+/* ---- セッション ---- */
+let session={role:null,castId:null,name:null};
+let currentPage='schedule';
+let selDate=new Date().toISOString().slice(0,10);
+
+/* ════ LOGIN ════ */
+function showCastPick(){
+  const sel=document.getElementById('castSelect');
+  sel.innerHTML=DB.casts.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  document.getElementById('roleStep').style.display='none';
+  document.getElementById('castStep').classList.add('show');
+}
+function backToRole(){
+  document.getElementById('roleStep').style.display='block';
+  document.getElementById('castStep').classList.remove('show');
+}
+function pickBoy(){session={role:'boy',castId:null,name:'店長'};enterApp();}
+function pickCast(){
+  const id=document.getElementById('castSelect').value;
+  const c=DB.casts.find(x=>x.id===id);
+  session={role:'cast',castId:id,name:c.name};enterApp();
+}
+function enterApp(){
+  document.getElementById('login').classList.remove('active');
+  document.getElementById('app').classList.add('active');
+  buildNav();renderAll();
+  // ロール別 初期ページ
+  goPage(session.role==='boy'?'schedule':'schedule');
+}
+function logout(){
+  session={role:null,castId:null,name:null};
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('login').classList.add('active');
+  backToRole();
+}
+
+/* ════ NAV ════ */
+function navConfig(){
+  const items=[{id:'schedule',ico:'📅',label:'予定ボード'}];
+  if(session.role==='boy') items.push({id:'inbox',ico:'📨',label:'LINE受信'});
+  items.push({id:'customers',ico:'👥',label:'顧客管理'});
+  return items;
+}
+function buildNav(){
+  const items=navConfig();
+  const unhandled=DB.lineMessages.filter(m=>!m.handled).length;
+  // sidebar
+  document.getElementById('sidebar').innerHTML=items.map(it=>`
+    <a class="nav-item ${it.id===currentPage?'active':''}" onclick="goPage('${it.id}')">
+      <span class="ni-ico">${it.ico}</span>${it.label}
+      ${it.id==='inbox'&&unhandled?`<span class="nav-badge">${unhandled}</span>`:''}
+    </a>`).join('');
+  // mobile tabs
+  document.getElementById('mobtabs').innerHTML=items.map(it=>`
+    <button class="mob-tab ${it.id===currentPage?'active':''}" onclick="goPage('${it.id}')">
+      <span class="mt-ico">${it.ico}</span>${it.label.replace('予定ボード','予定').replace('LINE受信','LINE').replace('顧客管理','顧客')}
+      ${it.id==='inbox'&&unhandled?`<span class="nav-badge">${unhandled}</span>`:''}
+    </button>`).join('');
+  // role badge / topbar
+  const rb=document.getElementById('roleBadge');
+  rb.className='role-badge '+(session.role==='boy'?'boy':'cast');
+  rb.textContent=session.role==='boy'?'BOY / 店長':'CAST';
+  document.getElementById('userName').textContent=session.name;
+  // boy-only add button on schedule
+  document.getElementById('addSchedBtn').style.display='inline-flex';
+}
+function goPage(id){
+  currentPage=id;
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.dataset.page===id));
+  buildNav();
+}
+
+/* ════ RENDER ALL ════ */
+function renderAll(){renderDayPick();renderSchedule();renderInbox();renderCustomers();}
+
+/* ════ 予定ボード ════ */
+function renderDayPick(){
+  const today=new Date();
+  let html='';
+  for(let i=0;i<7;i++){
+    const x=new Date(today);x.setDate(x.getDate()+i);
+    const iso=x.toISOString().slice(0,10);
+    html+=`<button class="day-chip ${iso===selDate?'active':''}" onclick="selDate='${iso}';renderSchedule();renderDayPick()">
+      <div class="dc-dow">${i===0?'今日':DOW[x.getDay()]}</div>
+      <div class="dc-d">${x.getDate()}</div></button>`;
+  }
+  document.getElementById('dayPick').innerHTML=html;
+}
+function renderSchedule(){
+  // ロールでフィルタ
+  let scheds=DB.schedules.filter(s=>s.date===selDate);
+  if(session.role==='cast') scheds=scheds.filter(s=>s.castId===session.castId);
+  document.getElementById('schedSub').textContent=
+    session.role==='cast'?'あなたの出勤予定（変更はLINEで店長へ）':'リアルタイム同期 — 全キャストの出勤状況';
+
+  // stats
+  const onCnt=scheds.filter(s=>s.status==='on').length;
+  const lateCnt=scheds.filter(s=>s.status==='late').length;
+  const offCnt=scheds.filter(s=>s.status==='off').length;
+  document.getElementById('schedStats').innerHTML=`
+    <div class="stat accent"><div class="stat-n">${onCnt+lateCnt}</div><div class="stat-l">出勤予定</div></div>
+    <div class="stat"><div class="stat-n">${lateCnt}</div><div class="stat-l">遅れ / 途中</div></div>
+    <div class="stat"><div class="stat-n">${offCnt}</div><div class="stat-l">休み</div></div>`;
+
+  const grid=document.getElementById('schedGrid');
+  if(!scheds.length){grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="e-ico">🗓️</div>この日の予定はまだありません</div>`;return;}
+  grid.innerHTML=scheds.map(s=>{
+    const cast=DB.casts.find(c=>c.id===s.castId)||{name:'?'};
+    const badge=s.status==='on'?'<span class="badge on">出勤</span>':s.status==='late'?'<span class="badge late">途中</span>':'<span class="badge off">休み</span>';
+    const canEdit=session.role==='boy';
+    return `<div class="sched-card ${s.status==='off'?'off':''}">
+      <div class="sc-top">
+        <div class="avatar">${cast.name[0]}</div>
+        <div><div class="sc-name">${cast.name}</div>${badge}</div>
+      </div>
+      <div class="sc-time ${s.status==='off'?'off':''}">${s.status==='off'?'お休み':s.start+' – '+s.end}</div>
+      ${s.note?`<div class="sc-note">📝 ${s.note}</div>`:''}
+      ${canEdit?`<div class="sc-actions">
+        <button class="btn sm" onclick="editSched('${s.id}')">編集</button>
+        <button class="btn-x" onclick="delSched('${s.id}')" title="削除">🗑</button>
+      </div>`:''}
+    </div>`;
+  }).join('');
+}
+
+/* ---- 予定 追加/編集/削除 ---- */
+let editingSchedId=null;
+function openSchedModal(){
+  editingSchedId=null;
+  document.getElementById('schedModalTitle').textContent='予定を追加';
+  const mc=document.getElementById('mCast');
+  // キャストは自分のみ
+  const list=session.role==='cast'?DB.casts.filter(c=>c.id===session.castId):DB.casts;
+  mc.innerHTML=list.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  document.getElementById('schedCastField').style.display=session.role==='cast'?'none':'block';
+  document.getElementById('mDate').value=selDate;
+  document.getElementById('mStatus').value='on';
+  document.getElementById('mStart').value='21:00';
+  document.getElementById('mEnd').value='02:00';
+  document.getElementById('mNote').value='';
+  toggleTimeRow();
+  openModal('schedModal');
+}
+function editSched(id){
+  const s=DB.schedules.find(x=>x.id===id);if(!s)return;
+  editingSchedId=id;
+  document.getElementById('schedModalTitle').textContent='予定を編集';
+  const mc=document.getElementById('mCast');
+  mc.innerHTML=DB.casts.map(c=>`<option value="${c.id}" ${c.id===s.castId?'selected':''}>${c.name}</option>`).join('');
+  document.getElementById('schedCastField').style.display=session.role==='cast'?'none':'block';
+  document.getElementById('mDate').value=s.date;
+  document.getElementById('mStatus').value=s.status;
+  document.getElementById('mStart').value=s.start||'21:00';
+  document.getElementById('mEnd').value=s.end||'02:00';
+  document.getElementById('mNote').value=s.note||'';
+  toggleTimeRow();
+  openModal('schedModal');
+}
+document.getElementById('mStatus').addEventListener('change',toggleTimeRow);
+function toggleTimeRow(){document.getElementById('mTimeRow').style.display=document.getElementById('mStatus').value==='off'?'none':'grid';}
+function saveSched(){
+  const castId=session.role==='cast'?session.castId:document.getElementById('mCast').value;
+  const status=document.getElementById('mStatus').value;
+  const rec={
+    castId,date:document.getElementById('mDate').value,status,
+    start:status==='off'?'':document.getElementById('mStart').value,
+    end:status==='off'?'':document.getElementById('mEnd').value,
+    note:document.getElementById('mNote').value.trim()
+  };
+  if(editingSchedId){Object.assign(DB.schedules.find(x=>x.id===editingSchedId),rec);}
+  else{rec.id='s'+Date.now();DB.schedules.push(rec);}
+  save();closeModal('schedModal');renderAll();toast('✅ 予定を保存しました');
+}
+function delSched(id){
+  if(!confirm('この予定を削除しますか？'))return;
+  DB.schedules=DB.schedules.filter(x=>x.id!==id);
+  save();renderAll();toast('🗑 予定を削除しました');
+}
+
+/* ════ LINE 受信ボックス + AI ════ */
+function renderInbox(){
+  const list=document.getElementById('inboxList');if(!list)return;
+  const msgs=DB.lineMessages;
+  const unh=msgs.filter(m=>!m.handled).length;
+  const cnt=document.getElementById('inboxCount');if(cnt)cnt.textContent=`未処理 ${unh}件`;
+  if(!msgs.length){list.innerHTML=`<div class="empty"><div class="e-ico">📭</div>メッセージはありません</div>`;return;}
+  list.innerHTML=msgs.map(m=>{
+    const ai=parseMessage(m.text,m.castId);
+    return `<div class="msg ${m.handled?'handled':''}">
+      <div class="msg-av">💬</div>
+      <div class="msg-body">
+        <div class="msg-from">${m.from} <span class="msg-time">${m.time}</span></div>
+        <div class="msg-text">${esc(m.text)}</div>
+        ${!m.handled&&ai?`
+          <div class="ai-parse">
+            <div class="ai-parse-row">🤖 AI解析: <b>${ai.label}</b></div>
+          </div>
+          <div class="msg-actions">
+            <button class="btn sm" onclick="applyAI('${m.id}')">✅ 予定に反映</button>
+            <button class="btn-ghost" style="padding:7px 12px;border-radius:8px" onclick="markHandled('${m.id}')">無視</button>
+          </div>`:
+          m.handled?`<div class="ai-chip">✔ 処理済み</div>`:
+          `<div class="msg-actions"><button class="btn-ghost" style="padding:7px 12px;border-radius:8px" onclick="markHandled('${m.id}')">処理済みにする</button></div>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ---- 簡易 自然言語パーサ（AIの代替・将来LLMに差し替え） ---- */
+function parseMessage(text,castId){
+  const t=text;
+  // 休み判定
+  if(/休|やすみ|お休み|欠勤|行けません|出れません/.test(t)){
+    const date=extractDate(t);
+    return {action:'off',castId,date,label:`${dateLabel(date)} を「休み」に登録`,status:'off'};
+  }
+  // 時刻抽出
+  const tm=t.match(/(\d{1,2})\s*[:時]\s*(\d{0,2})/);
+  if(tm){
+    let h=tm[1].padStart(2,'0');let mn=(tm[2]||'00').padStart(2,'0');
+    const start=`${h}:${mn}`;
+    const date=extractDate(t);
+    const late=parseInt(h,10)>=23;
+    return {action:'on',castId,date,start,status:late?'late':'on',
+      label:`${dateLabel(date)} ${start}〜 ${late?'途中出勤':'出勤'} で登録`};
+  }
+  return null;
+}
+function extractDate(t){
+  const today=new Date();
+  const iso=(off)=>{const x=new Date(today);x.setDate(x.getDate()+off);return x.toISOString().slice(0,10);};
+  if(/今日|本日|きょう/.test(t))return iso(0);
+  if(/明日|あした|あす/.test(t))return iso(1);
+  if(/明後日|あさって/.test(t))return iso(2);
+  // 曜日
+  for(let i=0;i<7;i++){
+    if(t.includes(DOW[i]+'曜')||t.includes(DOW[i]+'よう')){
+      for(let off=0;off<14;off++){const x=new Date(today);x.setDate(x.getDate()+off);if(x.getDay()===i)return x.toISOString().slice(0,10);}
+    }
+  }
+  return iso(0);
+}
+function dateLabel(iso){
+  const x=new Date(iso+'T00:00');const today=new Date().toISOString().slice(0,10);
+  const tm=new Date();tm.setDate(tm.getDate()+1);
+  if(iso===today)return '今日';
+  if(iso===tm.toISOString().slice(0,10))return '明日';
+  return `${x.getMonth()+1}/${x.getDate()}(${DOW[x.getDay()]})`;
+}
+function applyAI(msgId){
+  const m=DB.lineMessages.find(x=>x.id===msgId);if(!m)return;
+  const ai=parseMessage(m.text,m.castId);
+  if(!ai){toast('⚠️ 解析できませんでした');return;}
+  // 既存の同日予定があれば更新、なければ追加
+  let s=DB.schedules.find(x=>x.castId===ai.castId&&x.date===ai.date);
+  if(!s){s={id:'s'+Date.now(),castId:ai.castId,date:ai.date,start:'',end:'',note:'',status:'on'};DB.schedules.push(s);}
+  s.status=ai.status;
+  if(ai.status==='off'){s.start='';s.end='';}
+  else{s.start=ai.start||s.start||'21:00';s.end=s.end||'02:00';}
+  s.note=s.note||'LINEから自動反映';
+  m.handled=true;
+  pushAILog(`LINE「${m.from}」→ ${ai.label}`);
+  save();renderAll();
+  toast(`✅ ${m.from}の予定を反映しました`);
+}
+function markHandled(id){const m=DB.lineMessages.find(x=>x.id===id);if(m){m.handled=true;save();renderAll();}}
+
+/* ---- AIコマンドバー ---- */
+function runAI(){
+  const inp=document.getElementById('aiInput');
+  const cmd=inp.value.trim();if(!cmd)return;
+  const res=execAICommand(cmd);
+  pushAILog(`<span class="you">「${esc(cmd)}」</span> → ${res}`);
+  inp.value='';save();renderAll();
+}
+function execAICommand(cmd){
+  // 対象キャスト
+  const cast=DB.casts.find(c=>cmd.includes(c.name));
+  if(!cast)return '⚠️ キャスト名が見つかりません';
+  const date=extractDate(cmd);
+  // 削除
+  if(/削除|消して|消す|取り消し|キャンセル/.test(cmd)){
+    const before=DB.schedules.length;
+    DB.schedules=DB.schedules.filter(s=>!(s.castId===cast.id&&s.date===date));
+    if(DB.schedules.length<before){toast(`🗑 ${cast.name}の予定を削除`);return `${cast.name}の${dateLabel(date)}の予定を削除しました`;}
+    return '該当する予定がありませんでした';
+  }
+  // 休み
+  if(/休|やすみ|欠勤/.test(cmd)){
+    upsertSched(cast.id,date,{status:'off',start:'',end:''});
+    toast(`✅ ${cast.name}を休みに設定`);
+    return `${cast.name}を${dateLabel(date)}「休み」に設定しました`;
+  }
+  // 時刻
+  const tm=cmd.match(/(\d{1,2})\s*[:時]\s*(\d{0,2})/);
+  if(tm){
+    const start=`${tm[1].padStart(2,'0')}:${(tm[2]||'00').padStart(2,'0')}`;
+    const late=parseInt(tm[1],10)>=23;
+    upsertSched(cast.id,date,{status:late?'late':'on',start,end:'02:00'});
+    toast(`✅ ${cast.name}を${start}出勤に設定`);
+    return `${cast.name}を${dateLabel(date)} ${start}〜出勤に設定しました`;
+  }
+  return '⚠️ 時刻 / 休み / 削除 のいずれかを指定してください';
+}
+function upsertSched(castId,date,patch){
+  let s=DB.schedules.find(x=>x.castId===castId&&x.date===date);
+  if(!s){s={id:'s'+Date.now(),castId,date,start:'21:00',end:'02:00',note:'',status:'on'};DB.schedules.push(s);}
+  Object.assign(s,patch);
+}
+function pushAILog(html){
+  DB.aiLog=DB.aiLog||[];DB.aiLog.unshift({html,t:Date.now()});
+  DB.aiLog=DB.aiLog.slice(0,6);
+  const log=document.getElementById('aiLog');
+  if(log)log.innerHTML=DB.aiLog.map(l=>`<div class="ai-log-item">${l.html}</div>`).join('');
+}
+
+/* ════ 顧客管理 ════ */
+const RANKLABEL={vip:'VIP',gold:'GOLD',reg:'常連',new:'新規'};
+const RANKAV={vip:'linear-gradient(135deg,#ffd700,#b8860b)',gold:'linear-gradient(135deg,#ffb020,#cc7700)',reg:'linear-gradient(135deg,#4da3ff,#2a6bbf)',new:'linear-gradient(135deg,#00ff88,#16a34a)'};
+function visibleCustomers(){
+  return session.role==='cast'?DB.customers.filter(c=>c.castId===session.castId):DB.customers;
+}
+function renderCustomers(){
+  const grid=document.getElementById('custGrid');if(!grid)return;
+  const custs=visibleCustomers();
+  document.getElementById('custSub').textContent=
+    session.role==='cast'?'あなたの担当顧客':'全キャストの顧客（担当キャスト名つき）';
+  // stats
+  const total=custs.reduce((a,c)=>a+(c.spend||0),0);
+  const vip=custs.filter(c=>c.rank==='vip').length;
+  document.getElementById('custStats').innerHTML=`
+    <div class="stat accent"><div class="stat-n">${custs.length}</div><div class="stat-l">顧客数</div></div>
+    <div class="stat"><div class="stat-n">${vip}</div><div class="stat-l">VIP</div></div>
+    <div class="stat"><div class="stat-n">¥${(total/10000).toFixed(0)}<span style="font-size:14px">万</span></div><div class="stat-l">累計売上</div></div>`;
+  if(!custs.length){grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="e-ico">👥</div>顧客がまだ登録されていません</div>`;return;}
+  grid.innerHTML=custs.map(c=>{
+    const cast=DB.casts.find(x=>x.id===c.castId);
+    return `<div class="cust-card">
+      <div class="cust-top">
+        <div class="cust-av" style="background:${RANKAV[c.rank]};color:#000">${c.name[0]}</div>
+        <div style="flex:1;min-width:0">
+          <div class="cust-name">${esc(c.name)}</div>
+          <div class="cust-line">💬 ${esc(c.line||'-')}${session.role==='boy'&&cast?` ・ 担当:${cast.name}`:''}</div>
+        </div>
+        <span class="rank ${c.rank}">${RANKLABEL[c.rank]}</span>
+      </div>
+      <div class="cust-meta">
+        <div class="cm"><div class="cm-l">最終来店</div><div class="cm-v">${c.last?fmtDate(c.last):'-'}</div></div>
+        <div class="cm"><div class="cm-l">累計売上</div><div class="cm-v">¥${(c.spend||0).toLocaleString()}</div></div>
+      </div>
+      <div class="cust-note">📝 ${esc(c.note||'メモなし')}</div>
+      <div class="cust-actions">
+        <button class="btn sm" onclick="editCust('${c.id}')">編集</button>
+        <button class="btn-x" onclick="delCust('${c.id}')" title="削除">🗑</button>
+        ${c.bday?`<span class="ai-chip" style="margin-top:0">🎂 ${c.bday}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+let editingCustId=null;
+function openCustModal(){
+  editingCustId=null;
+  document.getElementById('custModalTitle').textContent='顧客を追加';
+  ['cName','cLine','cSpend','cBday','cNote'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('cRank').value='new';
+  document.getElementById('cLast').value=new Date().toISOString().slice(0,10);
+  openModal('custModal');
+}
+function editCust(id){
+  const c=DB.customers.find(x=>x.id===id);if(!c)return;
+  editingCustId=id;
+  document.getElementById('custModalTitle').textContent='顧客を編集';
+  document.getElementById('cName').value=c.name;
+  document.getElementById('cLine').value=c.line||'';
+  document.getElementById('cRank').value=c.rank;
+  document.getElementById('cLast').value=c.last||'';
+  document.getElementById('cSpend').value=c.spend||'';
+  document.getElementById('cBday').value=c.bday||'';
+  document.getElementById('cNote').value=c.note||'';
+  openModal('custModal');
+}
+function saveCust(){
+  const name=document.getElementById('cName').value.trim();
+  if(!name){toast('⚠️ 名前を入力してください');return;}
+  const rec={
+    castId:session.role==='cast'?session.castId:(editingCustId?DB.customers.find(x=>x.id===editingCustId).castId:DB.casts[0].id),
+    name,line:document.getElementById('cLine').value.trim(),
+    rank:document.getElementById('cRank').value,
+    last:document.getElementById('cLast').value,
+    spend:parseInt(document.getElementById('cSpend').value||'0',10),
+    bday:document.getElementById('cBday').value.trim(),
+    note:document.getElementById('cNote').value.trim()
+  };
+  if(editingCustId){Object.assign(DB.customers.find(x=>x.id===editingCustId),rec);}
+  else{rec.id='k'+Date.now();DB.customers.push(rec);}
+  save();closeModal('custModal');renderCustomers();toast('✅ 顧客情報を保存しました');
+}
+function delCust(id){
+  if(!confirm('この顧客を削除しますか？'))return;
+  DB.customers=DB.customers.filter(x=>x.id!==id);
+  save();renderCustomers();toast('🗑 顧客を削除しました');
+}
+
+/* ════ UTIL ════ */
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function fmtDate(iso){const x=new Date(iso+'T00:00');return `${x.getMonth()+1}/${x.getDate()}(${DOW[x.getDay()]})`;}
+let toastT;
+function toast(msg){const t=document.getElementById('toast');t.innerHTML=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2600);}
+// モーダル背景クリックで閉じる
+document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show');}));
+</script>
+</body>
+</html>
