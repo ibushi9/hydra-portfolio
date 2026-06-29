@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hydra Cabaret OS — 予定・顧客管理</title>
-<meta name="description" content="キャバクラ運営のための予定共有・顧客管理ダッシュボード。LINE連携 × AIで予定を自動管理。">
+<title>Cabaret OS — 予定共有 × 顧客管理 × LINE/AI</title>
+<meta name="description" content="キャバクラ運営のための予定共有・顧客管理アプリ。LINE連携 × AIで予定を自動管理。ボーイ/キャストでロール別表示。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;700&family=Syne:wght@600;700;800&family=Noto+Sans+JP:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -24,14 +24,13 @@ button{cursor:pointer}
 ::selection{background:var(--gneon);color:#000}
 .mono{font-family:'Space Mono',monospace}
 
-/* ── SCREENS ── */
 .screen{display:none}
 .screen.active{display:block}
 
 /* ── LOGIN ── */
 #login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 50% 0%,rgba(0,255,136,.07),transparent 60%)}
 .login-box{width:100%;max-width:440px;text-align:center}
-.login-logo{font-family:'EB Garamond',serif;font-size:44px;font-weight:700;letter-spacing:8px;margin-bottom:4px}
+.login-logo{font-family:'EB Garamond',serif;font-size:44px;font-weight:700;letter-spacing:6px;margin-bottom:4px}
 .login-logo span{color:var(--gneon)}
 .login-tag{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--g500);text-transform:uppercase;margin-bottom:40px}
 .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
@@ -47,11 +46,11 @@ select.cast-select{width:100%;padding:12px;background:var(--blk4);border:1px sol
 .login-back{margin-top:18px;background:none;border:none;color:var(--g500);font-size:12px}
 .login-back:hover{color:var(--gneon)}
 
-/* ── APP SHELL ── */
+/* ── SHELL ── */
 #app{min-height:100vh;display:flex;flex-direction:column}
 .topbar{position:sticky;top:0;z-index:50;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--g300)}
 .tb-left{display:flex;align-items:center;gap:12px}
-.tb-logo{font-family:'EB Garamond',serif;font-size:20px;font-weight:700;letter-spacing:3px}
+.tb-logo{font-family:'EB Garamond',serif;font-size:20px;font-weight:700;letter-spacing:2px}
 .tb-logo span{color:var(--gneon)}
 .role-badge{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;padding:4px 10px;border-radius:20px;text-transform:uppercase}
 .role-badge.boy{background:rgba(77,163,255,.15);color:var(--blue);border:1px solid rgba(77,163,255,.3)}
@@ -71,10 +70,8 @@ select.cast-select{width:100%;padding:12px;background:var(--blk4);border:1px sol
 .nav-badge{margin-left:auto;background:var(--pink);color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 5px}
 .main{flex:1;padding:24px;overflow:auto;max-width:100%}
 
-/* ── TABS (mobile) ── */
 .mobtabs{display:none}
 
-/* ── GENERIC ── */
 .page{display:none}
 .page.active{display:block;animation:fade .3s ease}
 @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -88,8 +85,6 @@ select.cast-select{width:100%;padding:12px;background:var(--blk4);border:1px sol
 .btn{background:var(--gneon);color:#000;border:none;font-weight:700;padding:10px 16px;border-radius:9px;font-size:13px;transition:.2s;display:inline-flex;align-items:center;gap:7px}
 .btn:hover{box-shadow:0 6px 20px rgba(0,255,136,.3);transform:translateY(-1px)}
 .btn.sm{padding:7px 12px;font-size:12px}
-.btn.danger{background:var(--pink);color:#fff}
-.btn.line{background:var(--line);color:#fff}
 .btn-x{background:none;border:1px solid var(--g300);color:var(--g500);width:30px;height:30px;border-radius:7px;font-size:14px;transition:.2s}
 .btn-x:hover{border-color:var(--pink);color:var(--pink)}
 
@@ -99,14 +94,12 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
 .field+.field{margin-top:12px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
-/* ── STAT CARDS ── */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:20px}
 .stat{background:linear-gradient(160deg,var(--blk4),var(--blk3));border:1px solid var(--g300);border-radius:14px;padding:16px 18px}
 .stat-n{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;line-height:1}
 .stat-l{font-size:11px;color:var(--g500);margin-top:6px;letter-spacing:1px}
 .stat.accent .stat-n{color:var(--gneon)}
 
-/* ── SCHEDULE BOARD ── */
 .board-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
 .daypick{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
 .day-chip{flex-shrink:0;background:var(--blk4);border:1px solid var(--g300);border-radius:11px;padding:8px 12px;text-align:center;min-width:62px;transition:.18s}
@@ -132,8 +125,6 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
 .sc-note{font-size:12px;color:var(--g600);margin-top:8px;border-top:1px solid var(--g300);padding-top:8px}
 .sc-actions{display:flex;gap:6px;margin-top:10px}
 
-/* ── LINE INBOX ── */
-.split{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
 .msg{display:flex;gap:11px;padding:13px;border-radius:11px;background:var(--blk4);border:1px solid var(--g300);margin-bottom:10px;transition:.2s}
 .msg.handled{opacity:.5}
 .msg-av{width:36px;height:36px;border-radius:10px;background:var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
@@ -147,7 +138,6 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
 .ai-parse-row b{color:var(--w)}
 .msg-actions{display:flex;gap:6px;margin-top:9px}
 
-/* ── AI COMMAND BAR ── */
 .ai-bar{background:linear-gradient(135deg,rgba(0,255,136,.06),var(--blk3));border:1px solid rgba(0,255,136,.25);border-radius:14px;padding:16px;margin-bottom:20px}
 .ai-bar-head{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:700;margin-bottom:11px}
 .ai-orb{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 30% 30%,var(--gneon),var(--g));box-shadow:0 0 14px rgba(0,255,136,.6);animation:pulse 2.4s ease-in-out infinite}
@@ -160,7 +150,6 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
 .ai-log-item{font-size:12px;color:var(--g600);padding:8px 11px;background:var(--blk2);border-radius:8px;border-left:2px solid var(--gneon);margin-top:7px}
 .ai-log-item .you{color:var(--w)}
 
-/* ── CUSTOMERS ── */
 .cust-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
 .cust-card{background:var(--blk4);border:1px solid var(--g300);border-radius:13px;padding:15px;transition:.2s}
 .cust-card:hover{border-color:var(--g500);transform:translateY(-2px)}
@@ -180,7 +169,6 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
 .cust-note{font-size:12px;color:var(--g600);background:var(--blk2);border-radius:8px;padding:8px 10px;min-height:38px}
 .cust-actions{display:flex;gap:6px;margin-top:11px}
 
-/* ── MODAL ── */
 .modal-bg{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px}
 .modal-bg.show{display:flex}
 .modal{background:var(--blk3);border:1px solid var(--g300);border-radius:16px;width:100%;max-width:440px;max-height:90vh;overflow:auto;padding:22px}
@@ -188,7 +176,6 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
 .modal-actions{display:flex;gap:10px;margin-top:18px}
 .modal-actions .btn{flex:1;justify-content:center}
 
-/* ── TOAST ── */
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120px);z-index:300;background:var(--blk5);border:1px solid var(--gneon);color:var(--w);padding:12px 20px;border-radius:12px;font-size:13px;font-weight:500;box-shadow:0 10px 40px rgba(0,0,0,.5);transition:.4s cubic-bezier(.2,.8,.2,1);max-width:90vw}
 #toast.show{transform:translateX(-50%) translateY(0)}
 #toast b{color:var(--gneon)}
@@ -197,11 +184,9 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
 .empty .e-ico{font-size:38px;margin-bottom:10px;opacity:.4}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--gneon);box-shadow:0 0 8px var(--gneon);animation:pulse 2s infinite;display:inline-block;margin-right:5px}
 
-/* ── RESPONSIVE ── */
 @media(max-width:860px){
   .sidebar{display:none}
   .main{padding:16px 14px 90px}
-  .split{grid-template-columns:1fr}
   .row2{grid-template-columns:1fr}
   .mobtabs{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:60;background:rgba(8,8,8,.96);backdrop-filter:blur(20px);border-top:1px solid var(--g300);padding:8px 6px;justify-content:space-around}
   .mob-tab{flex:1;background:none;border:none;color:var(--g500);font-size:10px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px;position:relative}
@@ -218,8 +203,8 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
 <!-- ════ LOGIN ════ -->
 <div id="login" class="screen active">
   <div class="login-box">
-    <div class="login-logo">HYDRA<span>.</span></div>
-    <div class="login-tag">Cabaret OS — 予定 × 顧客 × AI</div>
+    <div class="login-logo">CABARET<span>.</span>OS</div>
+    <div class="login-tag">予定共有 × 顧客管理 × LINE/AI</div>
 
     <div id="roleStep">
       <div class="role-grid">
@@ -249,7 +234,7 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
 <div id="app" class="screen">
   <div class="topbar">
     <div class="tb-left">
-      <div class="tb-logo">HYDRA<span>.</span></div>
+      <div class="tb-logo">CABARET<span>.</span>OS</div>
       <span id="roleBadge" class="role-badge boy">BOY</span>
     </div>
     <div class="tb-right">
@@ -262,7 +247,7 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
     <nav class="sidebar" id="sidebar"></nav>
 
     <main class="main">
-      <!-- ===== SCHEDULE ===== -->
+      <!-- 予定 -->
       <section class="page active" data-page="schedule">
         <div class="page-head">
           <div>
@@ -271,16 +256,12 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
           </div>
           <button class="btn" id="addSchedBtn" onclick="openSchedModal()">＋ 予定を追加</button>
         </div>
-
-        <div class="board-controls">
-          <div class="daypick" id="dayPick"></div>
-        </div>
-
+        <div class="board-controls"><div class="daypick" id="dayPick"></div></div>
         <div class="stats" id="schedStats"></div>
         <div class="sched-grid" id="schedGrid"></div>
       </section>
 
-      <!-- ===== LINE INBOX (boy only) ===== -->
+      <!-- LINE受信 -->
       <section class="page" data-page="inbox">
         <div class="page-head">
           <div>
@@ -288,22 +269,20 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
             <div class="page-sub">キャストからのLINEをAIが解析 → ワンタップで予定に反映</div>
           </div>
         </div>
-
         <div class="ai-bar">
           <div class="ai-bar-head"><span class="ai-orb"></span>AIアシスタント — 自然文で予定を操作</div>
           <div class="ai-input-wrap">
-            <input id="aiInput" placeholder="例: 明日のあやの予定を22時出勤に変更 / 土曜のみおを休みにして" onkeydown="if(event.key==='Enter')runAI()">
+            <input id="aiInput" placeholder="例: 明日のあやを22時出勤に / 土曜のみおを休みに / れなの予定を削除" onkeydown="if(event.key==='Enter')runAI()">
             <button class="btn" onclick="runAI()">実行</button>
           </div>
           <div class="ai-hint">💡 <b>「◯◯を△時出勤」「◯曜の◯◯を休み」「◯◯の予定を削除」</b> のように話しかけてください</div>
           <div class="ai-log" id="aiLog"></div>
         </div>
-
-        <div class="card-title">📨 未処理のLINEメッセージ <span id="inboxCount" class="mono" style="color:var(--gneon);margin-left:auto"></span></div>
+        <div class="card-title">📨 LINEメッセージ <span id="inboxCount" class="mono" style="color:var(--gneon);margin-left:auto"></span></div>
         <div id="inboxList"></div>
       </section>
 
-      <!-- ===== CUSTOMERS ===== -->
+      <!-- 顧客 -->
       <section class="page" data-page="customers">
         <div class="page-head">
           <div>
@@ -318,7 +297,6 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
     </main>
   </div>
 
-  <!-- mobile tab bar -->
   <nav class="mobtabs" id="mobtabs"></nav>
 </div>
 
@@ -327,13 +305,9 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
   <div class="modal">
     <div class="modal-title" id="schedModalTitle">予定を追加</div>
     <div class="field" id="schedCastField">
-      <label class="fl">キャスト</label>
-      <select id="mCast"></select>
+      <label class="fl">キャスト</label><select id="mCast"></select>
     </div>
-    <div class="field">
-      <label class="fl">日付</label>
-      <input type="date" id="mDate">
-    </div>
+    <div class="field"><label class="fl">日付</label><input type="date" id="mDate"></div>
     <div class="field">
       <label class="fl">出勤ステータス</label>
       <select id="mStatus">
@@ -346,10 +320,7 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
       <div class="field"><label class="fl">開始</label><input type="time" id="mStart" value="21:00"></div>
       <div class="field"><label class="fl">退勤</label><input type="time" id="mEnd" value="02:00"></div>
     </div>
-    <div class="field">
-      <label class="fl">メモ（同伴・本指名など）</label>
-      <input id="mNote" placeholder="例: 21時〜同伴あり">
-    </div>
+    <div class="field"><label class="fl">メモ（同伴・本指名など）</label><input id="mNote" placeholder="例: 21時〜同伴あり"></div>
     <div class="modal-actions">
       <button class="btn-ghost" style="flex:1;border-radius:9px;padding:11px" onclick="closeModal('schedModal')">キャンセル</button>
       <button class="btn" onclick="saveSched()">保存</button>
@@ -384,23 +355,20 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
 
 <script>
 /* ══════════════════════════════════════════
-   Hydra Cabaret OS — フロントエンド プロトタイプ
+   Cabaret OS — フロントエンド プロトタイプ（単体HTML）
+   Hydraポートフォリオとは独立した別ファイルです。
    データは localStorage に保存し、storage イベントで
    タブ間リアルタイム同期します（バックエンド不要）。
    将来 LINE Messaging API / AI(LLM) / DB に差し替え可能。
 ══════════════════════════════════════════ */
-const LS_KEY='hydraCabaretDB_v1';
+const LS_KEY='cabaretOS_v1';
 const DOW=['日','月','火','水','木','金','土'];
 
-/* ---- 初期シードデータ ---- */
 function seed(){
   const today=new Date();
   const d=(off)=>{const x=new Date(today);x.setDate(x.getDate()+off);return x.toISOString().slice(0,10);};
   return {
-    casts:[
-      {id:'c1',name:'あや'},{id:'c2',name:'みお'},{id:'c3',name:'れな'},
-      {id:'c4',name:'さき'},{id:'c5',name:'ゆい'}
-    ],
+    casts:[{id:'c1',name:'あや'},{id:'c2',name:'みお'},{id:'c3',name:'れな'},{id:'c4',name:'さき'},{id:'c5',name:'ゆい'}],
     schedules:[
       {id:'s1',castId:'c1',date:d(0),status:'on',start:'21:00',end:'02:00',note:'21時〜同伴あり'},
       {id:'s2',castId:'c2',date:d(0),status:'on',start:'20:00',end:'01:00',note:''},
@@ -425,47 +393,30 @@ function seed(){
   };
 }
 
-/* ---- DB load/save + 同期 ---- */
 let DB=load();
 function load(){try{const r=localStorage.getItem(LS_KEY);if(r)return JSON.parse(r);}catch(e){}const s=seed();localStorage.setItem(LS_KEY,JSON.stringify(s));return s;}
 function save(){localStorage.setItem(LS_KEY,JSON.stringify(DB));}
 window.addEventListener('storage',e=>{if(e.key===LS_KEY){DB=load();renderAll();toast('🔄 他の端末の変更を同期しました');}});
 
-/* ---- セッション ---- */
 let session={role:null,castId:null,name:null};
 let currentPage='schedule';
 let selDate=new Date().toISOString().slice(0,10);
 
 /* ════ LOGIN ════ */
 function showCastPick(){
-  const sel=document.getElementById('castSelect');
-  sel.innerHTML=DB.casts.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  document.getElementById('castSelect').innerHTML=DB.casts.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   document.getElementById('roleStep').style.display='none';
   document.getElementById('castStep').classList.add('show');
 }
-function backToRole(){
-  document.getElementById('roleStep').style.display='block';
-  document.getElementById('castStep').classList.remove('show');
-}
+function backToRole(){document.getElementById('roleStep').style.display='block';document.getElementById('castStep').classList.remove('show');}
 function pickBoy(){session={role:'boy',castId:null,name:'店長'};enterApp();}
-function pickCast(){
-  const id=document.getElementById('castSelect').value;
-  const c=DB.casts.find(x=>x.id===id);
-  session={role:'cast',castId:id,name:c.name};enterApp();
-}
+function pickCast(){const id=document.getElementById('castSelect').value;const c=DB.casts.find(x=>x.id===id);session={role:'cast',castId:id,name:c.name};enterApp();}
 function enterApp(){
   document.getElementById('login').classList.remove('active');
   document.getElementById('app').classList.add('active');
-  buildNav();renderAll();
-  // ロール別 初期ページ
-  goPage(session.role==='boy'?'schedule':'schedule');
+  buildNav();renderAll();goPage('schedule');
 }
-function logout(){
-  session={role:null,castId:null,name:null};
-  document.getElementById('app').classList.remove('active');
-  document.getElementById('login').classList.add('active');
-  backToRole();
-}
+function logout(){session={role:null,castId:null,name:null};document.getElementById('app').classList.remove('active');document.getElementById('login').classList.add('active');backToRole();}
 
 /* ════ NAV ════ */
 function navConfig(){
@@ -477,56 +428,39 @@ function navConfig(){
 function buildNav(){
   const items=navConfig();
   const unhandled=DB.lineMessages.filter(m=>!m.handled).length;
-  // sidebar
   document.getElementById('sidebar').innerHTML=items.map(it=>`
     <a class="nav-item ${it.id===currentPage?'active':''}" onclick="goPage('${it.id}')">
       <span class="ni-ico">${it.ico}</span>${it.label}
-      ${it.id==='inbox'&&unhandled?`<span class="nav-badge">${unhandled}</span>`:''}
-    </a>`).join('');
-  // mobile tabs
+      ${it.id==='inbox'&&unhandled?`<span class="nav-badge">${unhandled}</span>`:''}</a>`).join('');
   document.getElementById('mobtabs').innerHTML=items.map(it=>`
     <button class="mob-tab ${it.id===currentPage?'active':''}" onclick="goPage('${it.id}')">
       <span class="mt-ico">${it.ico}</span>${it.label.replace('予定ボード','予定').replace('LINE受信','LINE').replace('顧客管理','顧客')}
-      ${it.id==='inbox'&&unhandled?`<span class="nav-badge">${unhandled}</span>`:''}
-    </button>`).join('');
-  // role badge / topbar
+      ${it.id==='inbox'&&unhandled?`<span class="nav-badge">${unhandled}</span>`:''}</button>`).join('');
   const rb=document.getElementById('roleBadge');
   rb.className='role-badge '+(session.role==='boy'?'boy':'cast');
   rb.textContent=session.role==='boy'?'BOY / 店長':'CAST';
   document.getElementById('userName').textContent=session.name;
-  // boy-only add button on schedule
   document.getElementById('addSchedBtn').style.display='inline-flex';
 }
-function goPage(id){
-  currentPage=id;
-  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.dataset.page===id));
-  buildNav();
-}
+function goPage(id){currentPage=id;document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.dataset.page===id));buildNav();}
 
-/* ════ RENDER ALL ════ */
 function renderAll(){renderDayPick();renderSchedule();renderInbox();renderCustomers();}
 
 /* ════ 予定ボード ════ */
 function renderDayPick(){
-  const today=new Date();
-  let html='';
+  const today=new Date();let html='';
   for(let i=0;i<7;i++){
     const x=new Date(today);x.setDate(x.getDate()+i);
     const iso=x.toISOString().slice(0,10);
     html+=`<button class="day-chip ${iso===selDate?'active':''}" onclick="selDate='${iso}';renderSchedule();renderDayPick()">
-      <div class="dc-dow">${i===0?'今日':DOW[x.getDay()]}</div>
-      <div class="dc-d">${x.getDate()}</div></button>`;
+      <div class="dc-dow">${i===0?'今日':DOW[x.getDay()]}</div><div class="dc-d">${x.getDate()}</div></button>`;
   }
   document.getElementById('dayPick').innerHTML=html;
 }
 function renderSchedule(){
-  // ロールでフィルタ
   let scheds=DB.schedules.filter(s=>s.date===selDate);
   if(session.role==='cast') scheds=scheds.filter(s=>s.castId===session.castId);
-  document.getElementById('schedSub').textContent=
-    session.role==='cast'?'あなたの出勤予定（変更はLINEで店長へ）':'リアルタイム同期 — 全キャストの出勤状況';
-
-  // stats
+  document.getElementById('schedSub').textContent=session.role==='cast'?'あなたの出勤予定（変更はLINEで店長へ）':'リアルタイム同期 — 全キャストの出勤状況';
   const onCnt=scheds.filter(s=>s.status==='on').length;
   const lateCnt=scheds.filter(s=>s.status==='late').length;
   const offCnt=scheds.filter(s=>s.status==='off').length;
@@ -534,7 +468,6 @@ function renderSchedule(){
     <div class="stat accent"><div class="stat-n">${onCnt+lateCnt}</div><div class="stat-l">出勤予定</div></div>
     <div class="stat"><div class="stat-n">${lateCnt}</div><div class="stat-l">遅れ / 途中</div></div>
     <div class="stat"><div class="stat-n">${offCnt}</div><div class="stat-l">休み</div></div>`;
-
   const grid=document.getElementById('schedGrid');
   if(!scheds.length){grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="e-ico">🗓️</div>この日の予定はまだありません</div>`;return;}
   grid.innerHTML=scheds.map(s=>{
@@ -542,120 +475,93 @@ function renderSchedule(){
     const badge=s.status==='on'?'<span class="badge on">出勤</span>':s.status==='late'?'<span class="badge late">途中</span>':'<span class="badge off">休み</span>';
     const canEdit=session.role==='boy';
     return `<div class="sched-card ${s.status==='off'?'off':''}">
-      <div class="sc-top">
-        <div class="avatar">${cast.name[0]}</div>
-        <div><div class="sc-name">${cast.name}</div>${badge}</div>
-      </div>
+      <div class="sc-top"><div class="avatar">${cast.name[0]}</div><div><div class="sc-name">${cast.name}</div>${badge}</div></div>
       <div class="sc-time ${s.status==='off'?'off':''}">${s.status==='off'?'お休み':s.start+' – '+s.end}</div>
-      ${s.note?`<div class="sc-note">📝 ${s.note}</div>`:''}
-      ${canEdit?`<div class="sc-actions">
-        <button class="btn sm" onclick="editSched('${s.id}')">編集</button>
-        <button class="btn-x" onclick="delSched('${s.id}')" title="削除">🗑</button>
-      </div>`:''}
+      ${s.note?`<div class="sc-note">📝 ${esc(s.note)}</div>`:''}
+      ${canEdit?`<div class="sc-actions"><button class="btn sm" onclick="editSched('${s.id}')">編集</button><button class="btn-x" onclick="delSched('${s.id}')" title="削除">🗑</button></div>`:''}
     </div>`;
   }).join('');
 }
-
-/* ---- 予定 追加/編集/削除 ---- */
 let editingSchedId=null;
 function openSchedModal(){
   editingSchedId=null;
   document.getElementById('schedModalTitle').textContent='予定を追加';
-  const mc=document.getElementById('mCast');
-  // キャストは自分のみ
   const list=session.role==='cast'?DB.casts.filter(c=>c.id===session.castId):DB.casts;
-  mc.innerHTML=list.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  document.getElementById('mCast').innerHTML=list.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   document.getElementById('schedCastField').style.display=session.role==='cast'?'none':'block';
   document.getElementById('mDate').value=selDate;
   document.getElementById('mStatus').value='on';
   document.getElementById('mStart').value='21:00';
   document.getElementById('mEnd').value='02:00';
   document.getElementById('mNote').value='';
-  toggleTimeRow();
-  openModal('schedModal');
+  toggleTimeRow();openModal('schedModal');
 }
 function editSched(id){
   const s=DB.schedules.find(x=>x.id===id);if(!s)return;
   editingSchedId=id;
   document.getElementById('schedModalTitle').textContent='予定を編集';
-  const mc=document.getElementById('mCast');
-  mc.innerHTML=DB.casts.map(c=>`<option value="${c.id}" ${c.id===s.castId?'selected':''}>${c.name}</option>`).join('');
+  document.getElementById('mCast').innerHTML=DB.casts.map(c=>`<option value="${c.id}" ${c.id===s.castId?'selected':''}>${c.name}</option>`).join('');
   document.getElementById('schedCastField').style.display=session.role==='cast'?'none':'block';
   document.getElementById('mDate').value=s.date;
   document.getElementById('mStatus').value=s.status;
   document.getElementById('mStart').value=s.start||'21:00';
   document.getElementById('mEnd').value=s.end||'02:00';
   document.getElementById('mNote').value=s.note||'';
-  toggleTimeRow();
-  openModal('schedModal');
+  toggleTimeRow();openModal('schedModal');
 }
 document.getElementById('mStatus').addEventListener('change',toggleTimeRow);
 function toggleTimeRow(){document.getElementById('mTimeRow').style.display=document.getElementById('mStatus').value==='off'?'none':'grid';}
 function saveSched(){
   const castId=session.role==='cast'?session.castId:document.getElementById('mCast').value;
   const status=document.getElementById('mStatus').value;
-  const rec={
-    castId,date:document.getElementById('mDate').value,status,
+  const rec={castId,date:document.getElementById('mDate').value,status,
     start:status==='off'?'':document.getElementById('mStart').value,
     end:status==='off'?'':document.getElementById('mEnd').value,
-    note:document.getElementById('mNote').value.trim()
-  };
+    note:document.getElementById('mNote').value.trim()};
   if(editingSchedId){Object.assign(DB.schedules.find(x=>x.id===editingSchedId),rec);}
   else{rec.id='s'+Date.now();DB.schedules.push(rec);}
   save();closeModal('schedModal');renderAll();toast('✅ 予定を保存しました');
 }
-function delSched(id){
-  if(!confirm('この予定を削除しますか？'))return;
-  DB.schedules=DB.schedules.filter(x=>x.id!==id);
-  save();renderAll();toast('🗑 予定を削除しました');
-}
+function delSched(id){if(!confirm('この予定を削除しますか？'))return;DB.schedules=DB.schedules.filter(x=>x.id!==id);save();renderAll();toast('🗑 予定を削除しました');}
 
-/* ════ LINE 受信ボックス + AI ════ */
+/* ════ LINE受信 + AI ════ */
 function renderInbox(){
   const list=document.getElementById('inboxList');if(!list)return;
   const msgs=DB.lineMessages;
   const unh=msgs.filter(m=>!m.handled).length;
   const cnt=document.getElementById('inboxCount');if(cnt)cnt.textContent=`未処理 ${unh}件`;
+  const log=document.getElementById('aiLog');
+  if(log)log.innerHTML=(DB.aiLog||[]).map(l=>`<div class="ai-log-item">${l.html}</div>`).join('');
   if(!msgs.length){list.innerHTML=`<div class="empty"><div class="e-ico">📭</div>メッセージはありません</div>`;return;}
   list.innerHTML=msgs.map(m=>{
     const ai=parseMessage(m.text,m.castId);
     return `<div class="msg ${m.handled?'handled':''}">
       <div class="msg-av">💬</div>
       <div class="msg-body">
-        <div class="msg-from">${m.from} <span class="msg-time">${m.time}</span></div>
+        <div class="msg-from">${esc(m.from)} <span class="msg-time">${m.time}</span></div>
         <div class="msg-text">${esc(m.text)}</div>
         ${!m.handled&&ai?`
-          <div class="ai-parse">
-            <div class="ai-parse-row">🤖 AI解析: <b>${ai.label}</b></div>
-          </div>
+          <div class="ai-parse"><div class="ai-parse-row">🤖 AI解析: <b>${ai.label}</b></div></div>
           <div class="msg-actions">
             <button class="btn sm" onclick="applyAI('${m.id}')">✅ 予定に反映</button>
             <button class="btn-ghost" style="padding:7px 12px;border-radius:8px" onclick="markHandled('${m.id}')">無視</button>
           </div>`:
           m.handled?`<div class="ai-chip">✔ 処理済み</div>`:
           `<div class="msg-actions"><button class="btn-ghost" style="padding:7px 12px;border-radius:8px" onclick="markHandled('${m.id}')">処理済みにする</button></div>`}
-      </div>
-    </div>`;
+      </div></div>`;
   }).join('');
 }
-
-/* ---- 簡易 自然言語パーサ（AIの代替・将来LLMに差し替え） ---- */
 function parseMessage(text,castId){
   const t=text;
-  // 休み判定
   if(/休|やすみ|お休み|欠勤|行けません|出れません/.test(t)){
     const date=extractDate(t);
-    return {action:'off',castId,date,label:`${dateLabel(date)} を「休み」に登録`,status:'off'};
+    return {action:'off',castId,date,status:'off',label:`${dateLabel(date)} を「休み」に登録`};
   }
-  // 時刻抽出
   const tm=t.match(/(\d{1,2})\s*[:時]\s*(\d{0,2})/);
   if(tm){
-    let h=tm[1].padStart(2,'0');let mn=(tm[2]||'00').padStart(2,'0');
-    const start=`${h}:${mn}`;
-    const date=extractDate(t);
-    const late=parseInt(h,10)>=23;
-    return {action:'on',castId,date,start,status:late?'late':'on',
-      label:`${dateLabel(date)} ${start}〜 ${late?'途中出勤':'出勤'} で登録`};
+    const h=tm[1].padStart(2,'0'),mn=(tm[2]||'00').padStart(2,'0');
+    const start=`${h}:${mn}`,date=extractDate(t),late=parseInt(h,10)>=23;
+    return {action:'on',castId,date,start,status:late?'late':'on',label:`${dateLabel(date)} ${start}〜 ${late?'途中出勤':'出勤'} で登録`};
   }
   return null;
 }
@@ -665,7 +571,6 @@ function extractDate(t){
   if(/今日|本日|きょう/.test(t))return iso(0);
   if(/明日|あした|あす/.test(t))return iso(1);
   if(/明後日|あさって/.test(t))return iso(2);
-  // 曜日
   for(let i=0;i<7;i++){
     if(t.includes(DOW[i]+'曜')||t.includes(DOW[i]+'よう')){
       for(let off=0;off<14;off++){const x=new Date(today);x.setDate(x.getDate()+off);if(x.getDay()===i)return x.toISOString().slice(0,10);}
@@ -674,7 +579,7 @@ function extractDate(t){
   return iso(0);
 }
 function dateLabel(iso){
-  const x=new Date(iso+'T00:00');const today=new Date().toISOString().slice(0,10);
+  const x=new Date(iso+'T00:00'),today=new Date().toISOString().slice(0,10);
   const tm=new Date();tm.setDate(tm.getDate()+1);
   if(iso===today)return '今日';
   if(iso===tm.toISOString().slice(0,10))return '明日';
@@ -684,54 +589,41 @@ function applyAI(msgId){
   const m=DB.lineMessages.find(x=>x.id===msgId);if(!m)return;
   const ai=parseMessage(m.text,m.castId);
   if(!ai){toast('⚠️ 解析できませんでした');return;}
-  // 既存の同日予定があれば更新、なければ追加
   let s=DB.schedules.find(x=>x.castId===ai.castId&&x.date===ai.date);
   if(!s){s={id:'s'+Date.now(),castId:ai.castId,date:ai.date,start:'',end:'',note:'',status:'on'};DB.schedules.push(s);}
   s.status=ai.status;
-  if(ai.status==='off'){s.start='';s.end='';}
-  else{s.start=ai.start||s.start||'21:00';s.end=s.end||'02:00';}
+  if(ai.status==='off'){s.start='';s.end='';}else{s.start=ai.start||s.start||'21:00';s.end=s.end||'02:00';}
   s.note=s.note||'LINEから自動反映';
   m.handled=true;
-  pushAILog(`LINE「${m.from}」→ ${ai.label}`);
-  save();renderAll();
-  toast(`✅ ${m.from}の予定を反映しました`);
+  pushAILog(`LINE「${esc(m.from)}」→ ${ai.label}`);
+  save();renderAll();toast(`✅ ${m.from}の予定を反映しました`);
 }
 function markHandled(id){const m=DB.lineMessages.find(x=>x.id===id);if(m){m.handled=true;save();renderAll();}}
-
-/* ---- AIコマンドバー ---- */
 function runAI(){
-  const inp=document.getElementById('aiInput');
-  const cmd=inp.value.trim();if(!cmd)return;
+  const inp=document.getElementById('aiInput');const cmd=inp.value.trim();if(!cmd)return;
   const res=execAICommand(cmd);
   pushAILog(`<span class="you">「${esc(cmd)}」</span> → ${res}`);
   inp.value='';save();renderAll();
 }
 function execAICommand(cmd){
-  // 対象キャスト
   const cast=DB.casts.find(c=>cmd.includes(c.name));
   if(!cast)return '⚠️ キャスト名が見つかりません';
   const date=extractDate(cmd);
-  // 削除
   if(/削除|消して|消す|取り消し|キャンセル/.test(cmd)){
     const before=DB.schedules.length;
     DB.schedules=DB.schedules.filter(s=>!(s.castId===cast.id&&s.date===date));
     if(DB.schedules.length<before){toast(`🗑 ${cast.name}の予定を削除`);return `${cast.name}の${dateLabel(date)}の予定を削除しました`;}
     return '該当する予定がありませんでした';
   }
-  // 休み
   if(/休|やすみ|欠勤/.test(cmd)){
     upsertSched(cast.id,date,{status:'off',start:'',end:''});
-    toast(`✅ ${cast.name}を休みに設定`);
-    return `${cast.name}を${dateLabel(date)}「休み」に設定しました`;
+    toast(`✅ ${cast.name}を休みに設定`);return `${cast.name}を${dateLabel(date)}「休み」に設定しました`;
   }
-  // 時刻
   const tm=cmd.match(/(\d{1,2})\s*[:時]\s*(\d{0,2})/);
   if(tm){
-    const start=`${tm[1].padStart(2,'0')}:${(tm[2]||'00').padStart(2,'0')}`;
-    const late=parseInt(tm[1],10)>=23;
+    const start=`${tm[1].padStart(2,'0')}:${(tm[2]||'00').padStart(2,'0')}`,late=parseInt(tm[1],10)>=23;
     upsertSched(cast.id,date,{status:late?'late':'on',start,end:'02:00'});
-    toast(`✅ ${cast.name}を${start}出勤に設定`);
-    return `${cast.name}を${dateLabel(date)} ${start}〜出勤に設定しました`;
+    toast(`✅ ${cast.name}を${start}出勤に設定`);return `${cast.name}を${dateLabel(date)} ${start}〜出勤に設定しました`;
   }
   return '⚠️ 時刻 / 休み / 削除 のいずれかを指定してください';
 }
@@ -741,24 +633,17 @@ function upsertSched(castId,date,patch){
   Object.assign(s,patch);
 }
 function pushAILog(html){
-  DB.aiLog=DB.aiLog||[];DB.aiLog.unshift({html,t:Date.now()});
-  DB.aiLog=DB.aiLog.slice(0,6);
-  const log=document.getElementById('aiLog');
-  if(log)log.innerHTML=DB.aiLog.map(l=>`<div class="ai-log-item">${l.html}</div>`).join('');
+  DB.aiLog=DB.aiLog||[];DB.aiLog.unshift({html,t:Date.now()});DB.aiLog=DB.aiLog.slice(0,6);
 }
 
 /* ════ 顧客管理 ════ */
 const RANKLABEL={vip:'VIP',gold:'GOLD',reg:'常連',new:'新規'};
 const RANKAV={vip:'linear-gradient(135deg,#ffd700,#b8860b)',gold:'linear-gradient(135deg,#ffb020,#cc7700)',reg:'linear-gradient(135deg,#4da3ff,#2a6bbf)',new:'linear-gradient(135deg,#00ff88,#16a34a)'};
-function visibleCustomers(){
-  return session.role==='cast'?DB.customers.filter(c=>c.castId===session.castId):DB.customers;
-}
+function visibleCustomers(){return session.role==='cast'?DB.customers.filter(c=>c.castId===session.castId):DB.customers;}
 function renderCustomers(){
   const grid=document.getElementById('custGrid');if(!grid)return;
   const custs=visibleCustomers();
-  document.getElementById('custSub').textContent=
-    session.role==='cast'?'あなたの担当顧客':'全キャストの顧客（担当キャスト名つき）';
-  // stats
+  document.getElementById('custSub').textContent=session.role==='cast'?'あなたの担当顧客':'全キャストの顧客（担当キャスト名つき）';
   const total=custs.reduce((a,c)=>a+(c.spend||0),0);
   const vip=custs.filter(c=>c.rank==='vip').length;
   document.getElementById('custStats').innerHTML=`
@@ -771,10 +656,8 @@ function renderCustomers(){
     return `<div class="cust-card">
       <div class="cust-top">
         <div class="cust-av" style="background:${RANKAV[c.rank]};color:#000">${c.name[0]}</div>
-        <div style="flex:1;min-width:0">
-          <div class="cust-name">${esc(c.name)}</div>
-          <div class="cust-line">💬 ${esc(c.line||'-')}${session.role==='boy'&&cast?` ・ 担当:${cast.name}`:''}</div>
-        </div>
+        <div style="flex:1;min-width:0"><div class="cust-name">${esc(c.name)}</div>
+          <div class="cust-line">💬 ${esc(c.line||'-')}${session.role==='boy'&&cast?` ・ 担当:${cast.name}`:''}</div></div>
         <span class="rank ${c.rank}">${RANKLABEL[c.rank]}</span>
       </div>
       <div class="cust-meta">
@@ -785,9 +668,8 @@ function renderCustomers(){
       <div class="cust-actions">
         <button class="btn sm" onclick="editCust('${c.id}')">編集</button>
         <button class="btn-x" onclick="delCust('${c.id}')" title="削除">🗑</button>
-        ${c.bday?`<span class="ai-chip" style="margin-top:0">🎂 ${c.bday}</span>`:''}
-      </div>
-    </div>`;
+        ${c.bday?`<span class="ai-chip" style="margin-top:0">🎂 ${esc(c.bday)}</span>`:''}
+      </div></div>`;
   }).join('');
 }
 let editingCustId=null;
@@ -817,22 +699,14 @@ function saveCust(){
   if(!name){toast('⚠️ 名前を入力してください');return;}
   const rec={
     castId:session.role==='cast'?session.castId:(editingCustId?DB.customers.find(x=>x.id===editingCustId).castId:DB.casts[0].id),
-    name,line:document.getElementById('cLine').value.trim(),
-    rank:document.getElementById('cRank').value,
-    last:document.getElementById('cLast').value,
-    spend:parseInt(document.getElementById('cSpend').value||'0',10),
-    bday:document.getElementById('cBday').value.trim(),
-    note:document.getElementById('cNote').value.trim()
-  };
+    name,line:document.getElementById('cLine').value.trim(),rank:document.getElementById('cRank').value,
+    last:document.getElementById('cLast').value,spend:parseInt(document.getElementById('cSpend').value||'0',10),
+    bday:document.getElementById('cBday').value.trim(),note:document.getElementById('cNote').value.trim()};
   if(editingCustId){Object.assign(DB.customers.find(x=>x.id===editingCustId),rec);}
   else{rec.id='k'+Date.now();DB.customers.push(rec);}
   save();closeModal('custModal');renderCustomers();toast('✅ 顧客情報を保存しました');
 }
-function delCust(id){
-  if(!confirm('この顧客を削除しますか？'))return;
-  DB.customers=DB.customers.filter(x=>x.id!==id);
-  save();renderCustomers();toast('🗑 顧客を削除しました');
-}
+function delCust(id){if(!confirm('この顧客を削除しますか？'))return;DB.customers=DB.customers.filter(x=>x.id!==id);save();renderCustomers();toast('🗑 顧客を削除しました');}
 
 /* ════ UTIL ════ */
 function openModal(id){document.getElementById(id).classList.add('show');}
@@ -841,7 +715,6 @@ function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>'
 function fmtDate(iso){const x=new Date(iso+'T00:00');return `${x.getMonth()+1}/${x.getDate()}(${DOW[x.getDay()]})`;}
 let toastT;
 function toast(msg){const t=document.getElementById('toast');t.innerHTML=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2600);}
-// モーダル背景クリックで閉じる
 document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show');}));
 </script>
 </body>
