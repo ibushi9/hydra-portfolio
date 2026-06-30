@@ -372,10 +372,17 @@ function seed(){
     ]
   };
 }
+/* localStorageが使えない環境（プレビュー枠/サンドボックス等）では
+   自動でメモリ保存にフォールバックする安全ストレージ */
+let memStore={};
+const store={
+  get(k){try{return localStorage.getItem(k);}catch(e){return (k in memStore)?memStore[k]:null;}},
+  set(k,v){try{localStorage.setItem(k,v);}catch(e){memStore[k]=v;}}
+};
 let DB=load();
-function load(){try{const r=localStorage.getItem(LS_KEY);if(r)return JSON.parse(r);}catch(e){}const s=seed();localStorage.setItem(LS_KEY,JSON.stringify(s));return s;}
-function save(){localStorage.setItem(LS_KEY,JSON.stringify(DB));}
-window.addEventListener('storage',e=>{if(e.key===LS_KEY){DB=load();render();toast('🔄 変更を同期しました');}});
+function load(){const r=store.get(LS_KEY);if(r){try{return JSON.parse(r);}catch(e){}}const s=seed();store.set(LS_KEY,JSON.stringify(s));return s;}
+function save(){store.set(LS_KEY,JSON.stringify(DB));}
+try{window.addEventListener('storage',e=>{if(e.key===LS_KEY){DB=load();render();toast('🔄 変更を同期しました');}});}catch(e){}
 
 let session={role:null,castId:null,name:null};
 let view='week';
