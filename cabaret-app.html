@@ -218,6 +218,27 @@ button{cursor:pointer}
 input,textarea,select{background:var(--blk4);border:1px solid var(--g300);border-radius:10px;color:var(--w);padding:11px 12px;width:100%}
 input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gneon)}
 
+/* 送迎 */
+.sodei-banner{background:linear-gradient(135deg,rgba(77,163,255,.12),var(--blk3));border:1px solid rgba(77,163,255,.35);border-radius:13px;padding:13px 15px;margin-bottom:16px;display:flex;gap:12px;align-items:center}
+.sodei-banner.hide{display:none}
+.sodei-ic{font-size:26px;flex-shrink:0}
+.sodei-banner .sb-t{font-size:10px;color:var(--blue);font-weight:700;letter-spacing:1px}
+.sodei-banner .sb-m{font-size:15px;font-weight:700;margin-top:1px}
+.sodei-banner .sb-m b{color:var(--blue);font-family:'Space Mono',monospace}
+.sodei-banner .sb-sub{font-size:11px;color:var(--g500);margin-top:2px}
+.sodei-card{background:var(--blk3);border:1px solid var(--g300);border-radius:13px;padding:15px;margin-bottom:12px}
+.sodei-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px}
+.sodei-title{font-weight:800;font-size:15px;display:flex;align-items:center;gap:8px}
+.sodei-badge{background:rgba(77,163,255,.16);color:var(--blue);font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px}
+.sodei-meta{font-size:11.5px;color:var(--g600);font-family:'Space Mono',monospace;background:var(--blk2);padding:4px 10px;border-radius:8px}
+.stop{display:flex;align-items:center;gap:11px;padding:10px 0;border-top:1px solid var(--g300)}
+.stop-t{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:var(--gneon);min-width:50px}
+.stop-info{flex:1;min-width:0}
+.stop-name{font-weight:700;font-size:14px}
+.stop-addr{font-size:11px;color:var(--g500)}
+.stop-num{width:22px;height:22px;border-radius:50%;background:var(--blue);color:#001;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sodei-arrive{margin-top:8px;padding-top:10px;border-top:1px dashed var(--g400);font-size:12.5px;color:var(--g700);display:flex;align-items:center;gap:7px}
+.sodei-arrive b{color:var(--gneon);font-family:'Space Mono',monospace}
 .empty{text-align:center;padding:36px 20px;color:var(--g500);font-size:13px}
 .empty .e-ico{font-size:34px;margin-bottom:10px;opacity:.4}
 
@@ -319,6 +340,7 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
         <button onclick="shiftWeek(1)">›</button>
       </div>
       <div class="daypick" id="dayPick" style="display:none"></div>
+      <div class="sodei-banner hide" id="sodeiBanner"></div>
       <div class="summary" id="summary"></div>
       <div class="alert hide" id="alert"></div>
       <div id="weekView">
@@ -361,6 +383,21 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
         <div class="card-t">📮 送信履歴（デモ）</div>
         <div id="notiHistory"></div>
       </div>
+    </section>
+
+    <!-- ===== 送迎（ボーイ） ===== -->
+    <section class="section" data-sec="sodei">
+      <div class="page-head">
+        <div>
+          <div class="page-title">送迎まとめ × AI</div>
+          <div class="page-sub">出勤キャストを住所エリアで自動グループ化 → お迎え時刻・到着予定を算出</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-t"><span class="ai-orb"></span>送迎する日を選択</div>
+        <div class="daypick" id="sodeiDayPick"></div>
+      </div>
+      <div id="sodeiPlan"></div>
     </section>
 
     <!-- ===== アカウント管理（ボーイ） ===== -->
@@ -425,6 +462,18 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
   </div>
 </div>
 
+<!-- ════ 初回ログイン：住所登録 ════ -->
+<div class="modal-bg" id="onboard">
+  <div class="modal">
+    <div class="modal-title">はじめまして、<span id="obName"></span>さん🌸</div>
+    <p style="font-size:12.5px;color:var(--g600);margin-bottom:16px">送迎を手配するため、お住まいの情報を登録してください。<br><span style="color:var(--g500)">※これはデモです。住所は適当な内容でかまいません。</span></p>
+    <div class="field"><label class="fl">住所</label><input id="obAddr" placeholder="例: 新潟市中央区〇〇1-2-3"></div>
+    <div class="field"><label class="fl">エリア（送迎グループの判定に使用）</label>
+      <select id="obArea"><option>駅南</option><option>古町</option><option>万代</option><option>郊外</option></select></div>
+    <div class="modal-actions"><button class="btn block" onclick="saveOnboard()">登録して始める →</button></div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -450,11 +499,11 @@ function seed(){
   return {
     admin:{user:'admin',pass:'admin',name:'店長'},
     casts:[
-      {id:'c1',name:'あや',line:'あや★',user:'aya',pass:'1234'},
-      {id:'c2',name:'みお',line:'mio_cabaret',user:'mio',pass:'1234'},
-      {id:'c3',name:'れな',line:'れな',user:'rena',pass:'1234'},
-      {id:'c4',name:'さき',line:'saki0301',user:'saki',pass:'1234'},
-      {id:'c5',name:'ゆい',line:'yui',user:'yui',pass:'1234'}
+      {id:'c1',name:'あや',line:'あや★',user:'aya',pass:'1234',profileDone:true,area:'駅南',address:'新潟市中央区米山2-1',distMin:24},
+      {id:'c2',name:'みお',line:'mio_cabaret',user:'mio',pass:'1234',profileDone:true,area:'古町',address:'新潟市中央区古町通8',distMin:12},
+      {id:'c3',name:'れな',line:'れな',user:'rena',pass:'1234',profileDone:true,area:'駅南',address:'新潟市中央区笹口3-5',distMin:30},
+      {id:'c4',name:'さき',line:'saki0301',user:'saki',pass:'1234',profileDone:true,area:'古町',address:'新潟市中央区西堀通5',distMin:16},
+      {id:'c5',name:'ゆい',line:'yui',user:'yui',pass:'1234',profileDone:false}
     ],
     schedules:[
       {id:'s1',castId:'c1',date:isoAdd(0),status:'on',start:'21:00',end:'02:00',note:'21時〜同伴あり'},
@@ -516,6 +565,8 @@ function enterApp(){
   document.getElementById('pageSub').textContent=session.role==='boy'?'全キャストのシフトを管理':'自分の予定を確認';
   curTab='schedule';
   buildTabs();goTab('schedule');
+  // 初回ログイン：キャストが住所未登録なら登録を促す
+  if(session.role==='cast'){const c=DB.casts.find(x=>x.id===session.castId);if(c&&!c.profileDone)openOnboard(c);}
 }
 function logout(){
   session={role:null,castId:null,name:null};
@@ -532,6 +583,7 @@ function tabConfig(){
     {id:'schedule',ico:'📅',label:'予定'},
     {id:'inbox',ico:'📨',label:'LINE受信'},
     {id:'notify',ico:'📢',label:'通知'},
+    {id:'sodei',ico:'🚗',label:'送迎'},
     {id:'account',ico:'🪪',label:'アカウント'}
   ];
   return [{id:'schedule',ico:'📅',label:'予定'},{id:'compose',ico:'💬',label:'出勤連絡'}];
@@ -557,7 +609,8 @@ function findSched(castId,date){return DB.schedules.find(s=>s.castId===castId&&s
 
 /* ════ RENDER ════ */
 function render(){
-  if(curTab==='schedule'){ if(view==='week')renderWeek(); else {renderDayPick();renderDay();} renderSummary();renderAlert(); }
+  if(curTab==='schedule'){ if(view==='week')renderWeek(); else {renderDayPick();renderDay();} renderSummary();renderAlert();renderSodeiBanner(); }
+  else if(curTab==='sodei'){renderSodeiDayPick();renderSodeiPlan();}
   else if(curTab==='inbox'){renderInbox();}
   else if(curTab==='notify'){renderNotiDayPick();renderNotiPreview();renderNotiHistory();}
   else if(curTab==='account'){renderAccount();}
@@ -606,6 +659,112 @@ function genAcct(id){
   c.user='cast'+Math.random().toString(36).slice(2,6);
   c.pass=Math.random().toString(36).slice(2,8);
   save();renderAccount();toast('🔑 '+c.name+'のID/パスワードを自動発行しました');
+}
+
+/* ════ 初回ログイン：住所登録 ════ */
+const AREA_DIST={'駅南':22,'古町':13,'万代':9,'郊外':34};
+let onboardId=null;
+function openOnboard(c){
+  onboardId=c.id;
+  document.getElementById('obName').textContent=c.name;
+  document.getElementById('obAddr').value=c.address||'';
+  document.getElementById('obArea').value=c.area||'駅南';
+  document.getElementById('onboard').classList.add('show');
+}
+function saveOnboard(){
+  const c=DB.casts.find(x=>x.id===onboardId);if(!c)return;
+  c.address=document.getElementById('obAddr').value.trim()||'（未入力）';
+  c.area=document.getElementById('obArea').value;
+  c.distMin=AREA_DIST[c.area]||18;
+  c.profileDone=true;
+  save();
+  document.getElementById('onboard').classList.remove('show');
+  render();
+  toast('🌸 登録ありがとうございます！送迎に反映されます');
+}
+
+/* ════ 送迎（AIグルーピング＋時刻算出） ════ */
+function hmToMin(hm){const p=(hm||'21:00').split(':');return (+p[0])*60+(+p[1]||0);}
+function minToHM(t){t=((Math.round(t)%1440)+1440)%1440;return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');}
+function computeSodei(date){
+  const working=DB.casts.filter(c=>c.profileDone&&c.area)
+    .map(c=>({c,s:findSched(c.id,date)}))
+    .filter(x=>x.s&&(x.s.status==='on'||x.s.status==='late'||x.s.status==='early'));
+  const byArea={};
+  working.forEach(x=>{(byArea[x.c.area]=byArea[x.c.area]||[]).push(x);});
+  const groups=[];
+  Object.keys(byArea).forEach((area,gi)=>{
+    const arr=byArea[area].sort((a,b)=>(b.c.distMin||18)-(a.c.distMin||18));
+    const targetArrival=Math.min(...arr.map(x=>hmToMin(x.s.start)))-10; // 最早出勤の10分前に到着
+    const n=arr.length;
+    const stops=arr.map((x,k)=>({cast:x.c,start:x.s.start,pickup:minToHM(targetArrival-(x.c.distMin||18)-5*(n-1-k))}));
+    groups.push({area,car:gi+1,stops,arrival:minToHM(targetArrival),depart:stops[0].pickup});
+  });
+  // 住所未登録の出勤者
+  const noProfile=DB.casts.filter(c=>!c.profileDone).map(c=>({c,s:findSched(c.id,date)})).filter(x=>x.s&&(x.s.status==='on'||x.s.status==='late'));
+  return {groups,noProfile:noProfile.map(x=>x.c)};
+}
+let sodeiDate=todayISO();
+function renderSodeiDayPick(){
+  let html='';
+  for(let i=0;i<7;i++){const iso=isoAdd(i),x=new Date(iso);
+    html+=`<button class="day-chip ${iso===sodeiDate?'active':''}" onclick="sodeiDate='${iso}';renderSodeiDayPick();renderSodeiPlan()">
+      <div class="dc-dow">${i===0?'今日':DOW[x.getDay()]}</div><div class="dc-d">${x.getDate()}</div></button>`;}
+  document.getElementById('sodeiDayPick').innerHTML=html;
+}
+function renderSodeiPlan(){
+  const el=document.getElementById('sodeiPlan');
+  const {groups,noProfile}=computeSodei(sodeiDate);
+  if(!groups.length&&!noProfile.length){el.innerHTML=`<div class="empty"><div class="e-ico">🚗</div>この日は出勤予定がありません</div>`;return;}
+  let html='';
+  groups.forEach(g=>{
+    html+=`<div class="sodei-card">
+      <div class="sodei-head">
+        <div class="sodei-title">🚗 ${esc(g.area)}便 <span class="sodei-badge">${g.stops.length}名</span></div>
+        <div class="sodei-meta">出発 ${g.depart} → 到着 ${g.arrival}</div>
+      </div>
+      ${g.stops.map((s,i)=>`<div class="stop">
+        <div class="stop-num">${i+1}</div>
+        <div class="stop-t">${s.pickup}</div>
+        <div class="stop-info"><div class="stop-name">${esc(s.cast.name)}</div><div class="stop-addr">${esc(s.cast.address||'')}</div></div>
+      </div>`).join('')}
+      <div class="sodei-arrive">🏁 お店 到着予定 <b>${g.arrival}</b></div>
+    </div>`;
+  });
+  if(noProfile.length){
+    html+=`<div class="card" style="border-color:rgba(255,176,32,.35);background:rgba(255,176,32,.05)">
+      <div style="font-size:12px;color:var(--amber)">⚠️ 住所未登録のため送迎に含められないキャスト：${noProfile.map(c=>esc(c.name)).join('、')}（初回ログイン時に住所登録を促します）</div></div>`;
+  }
+  if(groups.length){
+    html+=`<button class="btn line block" style="margin-top:6px" onclick="sendSodei()">📢 送迎予定を各自のLINEに通知</button>`;
+  }
+  el.innerHTML=html;
+}
+function sendSodei(){
+  const {groups}=computeSodei(sodeiDate);
+  const x=new Date(sodeiDate+'T00:00');const dl=`${x.getMonth()+1}/${x.getDate()}`;
+  let cnt=0;
+  groups.forEach(g=>g.stops.forEach(s=>{
+    DB.chats[s.cast.id]=DB.chats[s.cast.id]||[];
+    DB.chats[s.cast.id].push({who:'official',text:`🚗【送迎のお知らせ ${dl}】\n${s.pickup} にお迎えに伺います。\nお店 到着予定：${g.arrival}（${g.area}便）\nご準備をお願いします！`});
+    cnt++;
+  }));
+  save();toast(`📢 ${cnt}名に送迎予定を通知しました（デモ）`);
+}
+function renderSodeiBanner(){
+  const el=document.getElementById('sodeiBanner');if(!el)return;
+  if(session.role!=='cast'){el.classList.add('hide');return;}
+  const date=view==='week'?todayISO():selDate;
+  const {groups}=computeSodei(date);
+  let found=null,g0=null;
+  groups.forEach(g=>g.stops.forEach(s=>{if(s.cast.id===session.castId){found=s;g0=g;}}));
+  if(!found){el.classList.add('hide');return;}
+  el.classList.remove('hide');
+  const dl=date===todayISO()?'本日':`${new Date(date).getMonth()+1}/${new Date(date).getDate()}`;
+  el.innerHTML=`<div class="sodei-ic">🚗</div><div>
+    <div class="sb-t">${dl}の送迎（${esc(g0.area)}便）</div>
+    <div class="sb-m"><b>${found.pickup}</b> お迎え → お店 <b>${g0.arrival}</b> 到着予定</div>
+    <div class="sb-sub">当日の変更は公式LINEへご連絡ください</div></div>`;
 }
 
 /* ---- 予定：週 ---- */
