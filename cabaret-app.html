@@ -44,11 +44,18 @@ button{cursor:pointer}
 .role-ico{font-size:32px;margin-bottom:8px}
 .role-name{font-weight:700;font-size:16px;margin-bottom:4px}
 .role-desc{font-size:11px;color:var(--g500);line-height:1.5}
-.login-cast-pick{display:none;margin-top:8px}
-.login-cast-pick.show{display:block}
-.login-cast-pick label{display:block;font-size:12px;color:var(--g500);margin-bottom:8px}
-select.cast-select{width:100%;padding:13px;background:var(--blk4);border:1px solid var(--g300);border-radius:10px;color:var(--w)}
-.login-back{margin-top:16px;background:none;border:none;color:var(--g500);font-size:12px}
+.login-form input{margin-top:10px;text-align:center}
+.login-err{color:var(--red);font-size:12px;margin-top:10px;min-height:16px}
+.demo-note{margin-top:22px;font-size:11px;color:var(--g500);line-height:1.8;background:var(--blk3);border:1px solid var(--g300);border-radius:10px;padding:12px 14px;text-align:left}
+.demo-note b{color:var(--g700)}
+.demo-note .dn-t{color:var(--amber);font-weight:700;margin-bottom:5px;display:block}
+/* アカウント管理 */
+.acct-row{display:flex;align-items:center;gap:8px;background:var(--blk4);border:1px solid var(--g300);border-radius:11px;padding:10px;margin-bottom:8px;flex-wrap:wrap}
+.acct-row .avatar{width:32px;height:32px;font-size:13px}
+.acct-row .an{font-weight:700;font-size:13px;min-width:40px}
+.acct-row .fg{flex:1;min-width:88px}
+.acct-row .lbl{font-size:9px;color:var(--g500);letter-spacing:1px}
+.acct-row input{width:100%;padding:8px 10px;font-size:13px;margin-top:2px}
 
 /* ── SHELL ── */
 #app{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
@@ -264,26 +271,13 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
   <div class="login-box">
     <div class="login-logo">CABARET<span>.</span>AI</div>
     <div class="login-tag">LINE出勤管理 × 予定共有</div>
-    <div id="roleStep">
-      <div class="role-grid">
-        <button class="role-card" onclick="pickBoy()">
-          <div class="role-ico">🤵</div>
-          <div class="role-name">ボーイ / 店長</div>
-          <div class="role-desc">LINE受信をAIで集計<br>予定管理・出勤通知</div>
-        </button>
-        <button class="role-card" onclick="showCastPick()">
-          <div class="role-ico">💁‍♀️</div>
-          <div class="role-name">キャスト</div>
-          <div class="role-desc">公式LINEに<br>出勤予定を送信</div>
-        </button>
-      </div>
+    <div class="login-form">
+      <input id="loginId" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="ID">
+      <input id="loginPw" type="password" placeholder="パスワード" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn block" onclick="doLogin()" style="margin-top:12px">ログイン →</button>
+      <div class="login-err" id="loginErr"></div>
     </div>
-    <div id="castStep" class="login-cast-pick">
-      <label>ログインするキャストを選択</label>
-      <select id="castSelect" class="cast-select"></select>
-      <div style="margin-top:14px"><button class="btn block" onclick="pickCast()">この名前でログイン →</button></div>
-      <button class="login-back" onclick="backToRole()">← 戻る</button>
-    </div>
+    <div class="demo-note" id="demoNote"></div>
   </div>
 </div>
 
@@ -369,6 +363,20 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
       </div>
     </section>
 
+    <!-- ===== アカウント管理（ボーイ） ===== -->
+    <section class="section" data-sec="account">
+      <div class="page-head">
+        <div>
+          <div class="page-title">アカウント管理</div>
+          <div class="page-sub">キャストごとにID・パスワードを発行（デモ）</div>
+        </div>
+      </div>
+      <div class="card" style="border-color:rgba(255,176,32,.35);background:rgba(255,176,32,.05)">
+        <div style="font-size:12px;color:var(--amber);line-height:1.7">⚠️ これは<b>デモ用の簡易ログイン</b>です。GitHub Pagesはソースが公開のため、ここでの本当の秘匿はできません。実運用（本人だけがログイン）にはサーバー認証が必要です。</div>
+      </div>
+      <div id="acctList"></div>
+    </section>
+
     <!-- ===== 出勤連絡（キャスト→LINE） キャスト ===== -->
     <section class="section" data-sec="compose">
       <div class="page-head">
@@ -426,7 +434,7 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
            予定表に反映 → 管理者へ出勤サマリーをLINE通知
    ※実LINE/AIはバックエンド接続時に差し替え。今はアプリ内で完全再現。
 ══════════════════════════════════════════ */
-const LS_KEY='cabaretAI_v3';
+const LS_KEY='cabaretAI_v4';
 const DOW=['日','月','火','水','木','金','土'];
 const STATUS={
   on:{label:'出勤',cls:'st-on',badge:'出勤'},
@@ -440,9 +448,13 @@ function isoAdd(off){const x=new Date();x.setDate(x.getDate()+off);return x.toIS
 
 function seed(){
   return {
+    admin:{user:'admin',pass:'admin',name:'店長'},
     casts:[
-      {id:'c1',name:'あや',line:'あや★'},{id:'c2',name:'みお',line:'mio_cabaret'},
-      {id:'c3',name:'れな',line:'れな'},{id:'c4',name:'さき',line:'saki0301'},{id:'c5',name:'ゆい',line:'yui'}
+      {id:'c1',name:'あや',line:'あや★',user:'aya',pass:'1234'},
+      {id:'c2',name:'みお',line:'mio_cabaret',user:'mio',pass:'1234'},
+      {id:'c3',name:'れな',line:'れな',user:'rena',pass:'1234'},
+      {id:'c4',name:'さき',line:'saki0301',user:'saki',pass:'1234'},
+      {id:'c5',name:'ゆい',line:'yui',user:'yui',pass:'1234'}
     ],
     schedules:[
       {id:'s1',castId:'c1',date:isoAdd(0),status:'on',start:'21:00',end:'02:00',note:'21時〜同伴あり'},
@@ -478,15 +490,22 @@ let weekStart=mondayOf(new Date()),selDate=todayISO(),notiDate=todayISO();
 function mondayOf(d){const x=new Date(d);const day=(x.getDay()+6)%7;x.setDate(x.getDate()-day);x.setHours(0,0,0,0);return x;}
 function weekDates(){const a=[];for(let i=0;i<7;i++){const x=new Date(weekStart);x.setDate(x.getDate()+i);a.push(x.toISOString().slice(0,10));}return a;}
 
-/* ════ LOGIN ════ */
-function showCastPick(){
-  document.getElementById('castSelect').innerHTML=DB.casts.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-  document.getElementById('roleStep').style.display='none';
-  document.getElementById('castStep').classList.add('show');
+/* ════ LOGIN（ID/パスワード・デモ） ════ */
+function doLogin(){
+  const id=document.getElementById('loginId').value.trim();
+  const pw=document.getElementById('loginPw').value;
+  const err=document.getElementById('loginErr');
+  if(DB.admin&&id===DB.admin.user&&pw===DB.admin.pass){session={role:'boy',castId:null,name:DB.admin.name};enterApp();return;}
+  const c=DB.casts.find(x=>x.user===id&&x.pass===pw);
+  if(c){session={role:'cast',castId:c.id,name:c.name};enterApp();return;}
+  err.textContent='⚠️ IDまたはパスワードが違います';
+  document.getElementById('loginPw').value='';
 }
-function backToRole(){document.getElementById('roleStep').style.display='block';document.getElementById('castStep').classList.remove('show');}
-function pickBoy(){session={role:'boy',castId:null,name:'店長'};enterApp();}
-function pickCast(){const id=document.getElementById('castSelect').value;const c=DB.casts.find(x=>x.id===id);session={role:'cast',castId:id,name:c.name};enterApp();}
+function fillDemoNote(){
+  const el=document.getElementById('demoNote');if(!el)return;
+  const casts=DB.casts.map(c=>`${c.name}：<b>${esc(c.user)}</b> / ${esc(c.pass)}`).join('　');
+  el.innerHTML=`<span class="dn-t">🔑 デモ用アカウント（お試し用）</span>店長：<b>${esc(DB.admin.user)}</b> / ${esc(DB.admin.pass)}<br>${casts}`;
+}
 function enterApp(){
   document.getElementById('login').classList.remove('active');
   document.getElementById('app').classList.add('active');
@@ -498,14 +517,22 @@ function enterApp(){
   curTab='schedule';
   buildTabs();goTab('schedule');
 }
-function logout(){session={role:null,castId:null,name:null};document.getElementById('app').classList.remove('active');document.getElementById('login').classList.add('active');backToRole();}
+function logout(){
+  session={role:null,castId:null,name:null};
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('login').classList.add('active');
+  document.getElementById('loginPw').value='';
+  document.getElementById('loginErr').textContent='';
+  fillDemoNote();
+}
 
 /* ════ TABS ════ */
 function tabConfig(){
   if(session.role==='boy') return [
     {id:'schedule',ico:'📅',label:'予定'},
     {id:'inbox',ico:'📨',label:'LINE受信'},
-    {id:'notify',ico:'📢',label:'通知'}
+    {id:'notify',ico:'📢',label:'通知'},
+    {id:'account',ico:'🪪',label:'アカウント'}
   ];
   return [{id:'schedule',ico:'📅',label:'予定'},{id:'compose',ico:'💬',label:'出勤連絡'}];
 }
@@ -533,7 +560,52 @@ function render(){
   if(curTab==='schedule'){ if(view==='week')renderWeek(); else {renderDayPick();renderDay();} renderSummary();renderAlert(); }
   else if(curTab==='inbox'){renderInbox();}
   else if(curTab==='notify'){renderNotiDayPick();renderNotiPreview();renderNotiHistory();}
+  else if(curTab==='account'){renderAccount();}
   else if(curTab==='compose'){renderCompose();}
+}
+
+/* ════ アカウント管理（ボーイ・デモ） ════ */
+function renderAccount(){
+  const el=document.getElementById('acctList');if(!el)return;
+  let html=`<div class="card"><div class="card-t">🔑 管理者（店長）</div>
+    <div class="acct-row">
+      <div class="avatar" style="background:linear-gradient(135deg,#4da3ff,#2a6bbf)">店</div><div class="an">店長</div>
+      <div class="fg"><div class="lbl">ID</div><input id="ad_u" value="${esc(DB.admin.user)}"></div>
+      <div class="fg"><div class="lbl">パスワード</div><input id="ad_p" value="${esc(DB.admin.pass)}"></div>
+      <button class="btn sm" onclick="saveAdmin()">保存</button>
+    </div></div>`;
+  html+=`<div class="card"><div class="card-t">💁‍♀️ キャスト（${DB.casts.length}名）</div>`;
+  DB.casts.forEach(c=>{
+    html+=`<div class="acct-row">
+      <div class="avatar">${c.name[0]}</div><div class="an">${esc(c.name)}</div>
+      <div class="fg"><div class="lbl">ID</div><input id="u_${c.id}" value="${esc(c.user||'')}"></div>
+      <div class="fg"><div class="lbl">パスワード</div><input id="p_${c.id}" value="${esc(c.pass||'')}"></div>
+      <button class="btn sm" onclick="saveAcct('${c.id}')">保存</button>
+      <button class="btn ghost2 sm" onclick="genAcct('${c.id}')">自動発行</button>
+    </div>`;
+  });
+  html+=`</div>`;
+  el.innerHTML=html;
+}
+function saveAdmin(){
+  const u=document.getElementById('ad_u').value.trim();
+  if(!u){toast('⚠️ IDを入力してください');return;}
+  DB.admin.user=u;DB.admin.pass=document.getElementById('ad_p').value;
+  save();toast('✅ 管理者アカウントを保存');
+}
+function saveAcct(id){
+  const c=DB.casts.find(x=>x.id===id);
+  const u=document.getElementById('u_'+id).value.trim();
+  if(!u){toast('⚠️ IDを入力してください');return;}
+  if(DB.casts.some(x=>x.id!==id&&x.user===u)||u===DB.admin.user){toast('⚠️ そのIDは既に使われています');return;}
+  c.user=u;c.pass=document.getElementById('p_'+id).value;
+  save();toast('✅ '+c.name+'のアカウントを保存');
+}
+function genAcct(id){
+  const c=DB.casts.find(x=>x.id===id);
+  c.user='cast'+Math.random().toString(36).slice(2,6);
+  c.pass=Math.random().toString(36).slice(2,8);
+  save();renderAccount();toast('🔑 '+c.name+'のID/パスワードを自動発行しました');
 }
 
 /* ---- 予定：週 ---- */
@@ -856,6 +928,7 @@ function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;'
 let toastT;
 function toast(msg){const t=document.getElementById('toast');t.innerHTML=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2400);}
 document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
+fillDemoNote();
 </script>
 </body>
 </html>
