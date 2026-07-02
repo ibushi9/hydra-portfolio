@@ -4,7 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cabaret AI">
+<meta name="theme-color" content="#050505">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="icon" type="image/png" href="./icon-192.png">
 <title>Cabaret AI — LINE出勤管理 × 予定共有</title>
 <meta name="description" content="キャバクラの出勤管理アプリ。キャストがLINEで送った出勤予定をAIが解読し、予定表に反映＆管理者へ出勤サマリーを自動通知。週別ビュー・iPhone対応。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -237,6 +243,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gneon)}
 .stop-name{font-weight:700;font-size:14px}
 .stop-addr{font-size:11px;color:var(--g500)}
 .stop-num{width:22px;height:22px;border-radius:50%;background:var(--blue);color:#001;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stop-arr{font-size:10px;color:var(--g500);font-family:'Space Mono',monospace;flex-shrink:0}
 .sodei-arrive{margin-top:8px;padding-top:10px;border-top:1px dashed var(--g400);font-size:12.5px;color:var(--g700);display:flex;align-items:center;gap:7px}
 .sodei-arrive b{color:var(--gneon);font-family:'Space Mono',monospace}
 .empty{text-align:center;padding:36px 20px;color:var(--g500);font-size:13px}
@@ -310,6 +317,7 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
       <span id="roleBadge" class="role-badge boy">BOY</span>
     </div>
     <div class="tb-right">
+      <button class="btn-ghost" id="notifyBtn" onclick="enableNotify()" title="通知を有効にする">🔔</button>
       <span class="tb-user"><span class="sync-dot"></span><b id="userName">—</b></span>
       <button class="btn-ghost" onclick="logout()">ログアウト</button>
     </div>
@@ -396,6 +404,12 @@ label.fl{display:block;font-size:11px;color:var(--g500);margin:0 0 5px 2px;lette
       <div class="card">
         <div class="card-t"><span class="ai-orb"></span>送迎する日を選択</div>
         <div class="daypick" id="sodeiDayPick"></div>
+        <div style="display:flex;justify-content:center;margin-top:12px">
+          <div class="seg">
+            <button id="segGo" class="active" onclick="setSodeiDir('go')">🚗 行き（お迎え）</button>
+            <button id="segBack" onclick="setSodeiDir('back')">🚙 帰り（送り）</button>
+          </div>
+        </div>
       </div>
       <div id="sodeiPlan"></div>
     </section>
@@ -686,21 +700,42 @@ function saveOnboard(){
 /* ════ 送迎（AIグルーピング＋時刻算出） ════ */
 function hmToMin(hm){const p=(hm||'21:00').split(':');return (+p[0])*60+(+p[1]||0);}
 function minToHM(t){t=((Math.round(t)%1440)+1440)%1440;return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');}
-function computeSodei(date){
+function computeSodei(date,dir){
+  dir=dir||'go';
   const working=DB.casts.filter(c=>c.profileDone&&c.area)
     .map(c=>({c,s:findSched(c.id,date)}))
     .filter(x=>x.s&&(x.s.status==='on'||x.s.status==='late'||x.s.status==='early'));
   const byArea={};
   working.forEach(x=>{(byArea[x.c.area]=byArea[x.c.area]||[]).push(x);});
   const groups=[];
-  Object.keys(byArea).forEach((area,gi)=>{
-    const arr=byArea[area].sort((a,b)=>(b.c.distMin||18)-(a.c.distMin||18));
-    const targetArrival=Math.min(...arr.map(x=>hmToMin(x.s.start)))-10; // 最早出勤の10分前に到着
-    const n=arr.length;
-    const stops=arr.map((x,k)=>({cast:x.c,start:x.s.start,pickup:minToHM(targetArrival-(x.c.distMin||18)-5*(n-1-k))}));
-    groups.push({area,car:gi+1,stops,arrival:minToHM(targetArrival),depart:stops[0].pickup});
+  Object.keys(byArea).forEach(area=>{
+    // 行き=出勤時刻 / 帰り=退勤時刻 が近い人どうしを同じ便に（90分超で便を分割）
+    const keyfn=dir==='go'?(x=>x.s.start||'21:00'):(x=>x.s.end||'02:00');
+    const sorted=byArea[area].slice().sort((a,b)=>hmToMin(keyfn(a))-hmToMin(keyfn(b)));
+    const subs=[];let cur=[];
+    sorted.forEach(x=>{
+      if(cur.length&&hmToMin(keyfn(x))-hmToMin(keyfn(cur[cur.length-1]))>90){subs.push(cur);cur=[x];}
+      else cur.push(x);
+    });
+    if(cur.length)subs.push(cur);
+    subs.forEach((sub,si)=>{
+      const label=area+'便'+(subs.length>1?`（${si+1}）`:'');
+      if(dir==='go'){
+        // 遠い人を先に拾い、最早出勤の10分前に到着
+        const arr=sub.slice().sort((a,b)=>(b.c.distMin||18)-(a.c.distMin||18));
+        const target=Math.min(...sub.map(x=>hmToMin(x.s.start)))-10;
+        const n=arr.length;
+        const stops=arr.map((x,k)=>({cast:x.c,time:minToHM(target-(x.c.distMin||18)-5*(n-1-k))}));
+        groups.push({area,label,dir,stops,storeTime:minToHM(target),depart:stops[0].time});
+      }else{
+        // 帰り：最終退勤+5分に店を出発し、近い人から順に送る
+        const arr=sub.slice().sort((a,b)=>(a.c.distMin||18)-(b.c.distMin||18));
+        const departM=Math.max(...sub.map(x=>hmToMin(x.s.end||'02:00')))+5;
+        const stops=arr.map((x,k)=>({cast:x.c,time:minToHM(departM+(x.c.distMin||18)+5*k)}));
+        groups.push({area,label,dir,stops,storeTime:minToHM(departM),depart:minToHM(departM)});
+      }
+    });
   });
-  // 住所未登録の出勤者
   const noProfile=DB.casts.filter(c=>!c.profileDone).map(c=>({c,s:findSched(c.id,date)})).filter(x=>x.s&&(x.s.status==='on'||x.s.status==='late'));
   return {groups,noProfile:noProfile.map(x=>x.c)};
 }
@@ -712,23 +747,33 @@ function renderSodeiDayPick(){
       <div class="dc-dow">${i===0?'今日':DOW[x.getDay()]}</div><div class="dc-d">${x.getDate()}</div></button>`;}
   document.getElementById('sodeiDayPick').innerHTML=html;
 }
+let sodeiDir='go';
+function setSodeiDir(d){
+  sodeiDir=d;
+  document.getElementById('segGo').classList.toggle('active',d==='go');
+  document.getElementById('segBack').classList.toggle('active',d==='back');
+  renderSodeiPlan();
+}
 function renderSodeiPlan(){
   const el=document.getElementById('sodeiPlan');
-  const {groups,noProfile}=computeSodei(sodeiDate);
+  const isGo=sodeiDir==='go';
+  const {groups,noProfile}=computeSodei(sodeiDate,sodeiDir);
   if(!groups.length&&!noProfile.length){el.innerHTML=`<div class="empty"><div class="e-ico">🚗</div>この日は出勤予定がありません</div>`;return;}
   let html='';
   groups.forEach(g=>{
     html+=`<div class="sodei-card">
       <div class="sodei-head">
-        <div class="sodei-title">🚗 ${esc(g.area)}便 <span class="sodei-badge">${g.stops.length}名</span></div>
-        <div class="sodei-meta">出発 ${g.depart} → 到着 ${g.arrival}</div>
+        <div class="sodei-title">${isGo?'🚗':'🚙'} ${esc(g.label)} <span class="sodei-badge">${g.stops.length}名</span></div>
+        <div class="sodei-meta">${isGo?`出発 ${g.depart} → 到着 ${g.storeTime}`:`店発 ${g.storeTime}`}</div>
       </div>
       ${g.stops.map((s,i)=>`<div class="stop">
         <div class="stop-num">${i+1}</div>
-        <div class="stop-t">${s.pickup}</div>
+        <div class="stop-t">${s.time}</div>
         <div class="stop-info"><div class="stop-name">${esc(s.cast.name)}</div><div class="stop-addr">${esc(s.cast.address||'')}</div></div>
+        <div class="stop-arr">${isGo?'お迎え':'帰宅予定'}</div>
       </div>`).join('')}
-      <div class="sodei-arrive">🏁 お店 到着予定 <b>${g.arrival}</b></div>
+      ${isGo?`<div class="sodei-arrive">🏁 お店 到着予定 <b>${g.storeTime}</b></div>`
+             :`<div class="sodei-arrive">🏠 最終 帰宅予定 <b>${g.stops[g.stops.length-1].time}</b></div>`}
     </div>`;
   });
   if(noProfile.length){
@@ -736,34 +781,43 @@ function renderSodeiPlan(){
       <div style="font-size:12px;color:var(--amber)">⚠️ 住所未登録のため送迎に含められないキャスト：${noProfile.map(c=>esc(c.name)).join('、')}（初回ログイン時に住所登録を促します）</div></div>`;
   }
   if(groups.length){
-    html+=`<button class="btn line block" style="margin-top:6px" onclick="sendSodei()">📢 送迎予定を各自のLINEに通知</button>`;
+    html+=`<button class="btn line block" style="margin-top:6px" onclick="sendSodei()">📢 ${isGo?'お迎え':'お送り'}予定を各自のLINEに通知</button>`;
   }
   el.innerHTML=html;
 }
 function sendSodei(){
-  const {groups}=computeSodei(sodeiDate);
+  const isGo=sodeiDir==='go';
+  const {groups}=computeSodei(sodeiDate,sodeiDir);
   const x=new Date(sodeiDate+'T00:00');const dl=`${x.getMonth()+1}/${x.getDate()}`;
   let cnt=0;
   groups.forEach(g=>g.stops.forEach(s=>{
     DB.chats[s.cast.id]=DB.chats[s.cast.id]||[];
-    DB.chats[s.cast.id].push({who:'official',text:`🚗【送迎のお知らせ ${dl}】\n${s.pickup} にお迎えに伺います。\nお店 到着予定：${g.arrival}（${g.area}便）\nご準備をお願いします！`});
-    cnt++;
+    const text=isGo
+      ? `🚗【お迎えのお知らせ ${dl}】\n${s.time} にお迎えに伺います。\nお店 到着予定：${g.storeTime}（${g.label}）\nご準備をお願いします！`
+      : `🚙【お送りのお知らせ ${dl}】\n閉店後 ${g.storeTime} にお店を出発します。\nご自宅 到着予定：${s.time}（${g.label}）\nお疲れ様です！`;
+    DB.chats[s.cast.id].push({who:'official',text});cnt++;
   }));
-  save();toast(`📢 ${cnt}名に送迎予定を通知しました（デモ）`);
+  save();
+  notify('🚗 送迎通知を送信',`${cnt}名に${isGo?'お迎え':'お送り'}予定を通知しました`);
+  toast(`📢 ${cnt}名に${isGo?'お迎え':'お送り'}予定を通知しました（デモ）`);
 }
 function renderSodeiBanner(){
   const el=document.getElementById('sodeiBanner');if(!el)return;
   if(session.role!=='cast'){el.classList.add('hide');return;}
   const date=view==='week'?todayISO():selDate;
-  const {groups}=computeSodei(date);
-  let found=null,g0=null;
-  groups.forEach(g=>g.stops.forEach(s=>{if(s.cast.id===session.castId){found=s;g0=g;}}));
-  if(!found){el.classList.add('hide');return;}
+  const go=computeSodei(date,'go'),back=computeSodei(date,'back');
+  let gi=null,gg=null,bi=null,bg=null;
+  go.groups.forEach(g=>g.stops.forEach(s=>{if(s.cast.id===session.castId){gi=s;gg=g;}}));
+  back.groups.forEach(g=>g.stops.forEach(s=>{if(s.cast.id===session.castId){bi=s;bg=g;}}));
+  if(!gi&&!bi){el.classList.add('hide');return;}
   el.classList.remove('hide');
   const dl=date===todayISO()?'本日':`${new Date(date).getMonth()+1}/${new Date(date).getDate()}`;
+  let lines='';
+  if(gi)lines+=`<div class="sb-m">🚗 <b>${gi.time}</b> お迎え → お店 <b>${gg.storeTime}</b> 到着</div>`;
+  if(bi)lines+=`<div class="sb-m">🚙 店発 <b>${bg.storeTime}</b> → 帰宅 <b>${bi.time}</b> 予定</div>`;
   el.innerHTML=`<div class="sodei-ic">🚗</div><div>
-    <div class="sb-t">${dl}の送迎（${esc(g0.area)}便）</div>
-    <div class="sb-m"><b>${found.pickup}</b> お迎え → お店 <b>${g0.arrival}</b> 到着予定</div>
+    <div class="sb-t">${dl}の送迎（${esc((gg||bg).label)}）</div>
+    ${lines}
     <div class="sb-sub">当日の変更は公式LINEへご連絡ください</div></div>`;
 }
 
@@ -1042,6 +1096,7 @@ function sendCompose(){
   const p=parseMessage(text,session.castId);
   DB.chats[session.castId].push({who:'ai',text:`受け付けました！\n${aiSummaryLine(p)}\n店長に共有しますね。`});
   inp.value='';save();buildTabs();renderCompose();
+  notify('📨 出勤連絡を受付','AIが解読しました：'+aiSummaryLine(p));
   toast('📨 公式LINEに送信 → AIが解読しました');
 }
 
@@ -1087,6 +1142,43 @@ function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;'
 let toastT;
 function toast(msg){const t=document.getElementById('toast');t.innerHTML=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2400);}
 document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
+
+/* ════ PWA / 通知 ════ */
+let swReg=null;
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js').then(r=>{swReg=r;}).catch(()=>{});
+  });
+}
+function updateNotifyBtn(){
+  const b=document.getElementById('notifyBtn');if(!b)return;
+  const s=(window.Notification&&Notification.permission)||'default';
+  if(s==='granted'){b.textContent='🔔';b.style.borderColor='var(--gneon)';b.style.color='var(--gneon)';b.title='通知ON';}
+  else if(s==='denied'){b.textContent='🔕';b.title='通知はブロックされています（端末設定から許可してください）';}
+  else{b.textContent='🔔';b.title='タップして通知を有効化';}
+}
+async function enableNotify(){
+  if(!('Notification' in window)){toast('⚠️ この端末は通知に未対応です');return;}
+  if(Notification.permission==='granted'){notify('✅ 通知はすでにON','テスト通知です。ここに送迎や出勤の連絡が届きます。');updateNotifyBtn();return;}
+  if(Notification.permission==='denied'){toast('🔕 通知がブロックされています。端末の設定から許可してください');return;}
+  try{
+    const p=await Notification.requestPermission();
+    updateNotifyBtn();
+    if(p==='granted'){notify('🔔 通知をONにしました','送迎・出勤の連絡がここに届きます（アプリ起動中）。');}
+    else{toast('通知は有効になりませんでした');}
+  }catch(e){toast('通知の設定に失敗しました');}
+}
+function notify(title,body){
+  try{
+    if(!('Notification' in window)||Notification.permission!=='granted')return;
+    if(swReg&&swReg.showNotification){
+      swReg.showNotification(title,{body,icon:'./icon-192.png',badge:'./icon-192.png',tag:'cabaret',renotify:true});
+    }else{
+      new Notification(title,{body,icon:'./icon-192.png'});
+    }
+  }catch(e){}
+}
+updateNotifyBtn();
 fillDemoNote();
 </script>
 </body>
