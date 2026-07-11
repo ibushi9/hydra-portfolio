@@ -244,72 +244,6 @@ button{font-family:inherit}
 .c-btn:hover{border-color:var(--gneon);background:rgba(0,255,136,.06)}
 .c-btn:hover svg{stroke:var(--gneon);filter:drop-shadow(0 0 4px var(--gneon))}
 .c-hint{text-align:center;margin-top:16px;font-family:'Space Mono',monospace;font-size:9px;color:var(--g400);letter-spacing:2px;text-transform:uppercase}
-.c-count{font-family:'Space Mono',monospace;font-size:11px;color:var(--gneon);letter-spacing:2px;min-width:64px;text-align:center;text-shadow:0 0 8px rgba(0,255,136,.4)}
-.v-card{cursor:pointer}
-.v-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none;opacity:0;transition:opacity .3s}
-.v-card:hover .v-play{opacity:1}
-.v-play-ic{width:56px;height:56px;border-radius:50%;background:rgba(5,5,5,.75);border:1px solid rgba(0,255,136,.4);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(0,255,136,.25)}
-.v-play-ic svg{width:18px;height:18px;fill:var(--gneon);margin-left:3px}
-
-/* ── LIGHTBOX (video in-place player) ── */
-#lightbox{position:fixed;inset:0;z-index:900;display:none;align-items:center;justify-content:center}
-#lightbox.open{display:flex}
-.lb-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(12px)}
-.lb-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:14px;animation:lbIn .35s cubic-bezier(.2,.8,.2,1)}
-@keyframes lbIn{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
-.lb-frame{width:min(380px,88vw);height:min(660px,74vh);background:#000;border:1px solid rgba(0,255,136,.2);border-radius:4px;overflow:hidden;box-shadow:0 0 60px rgba(0,255,136,.12),0 30px 80px rgba(0,0,0,.6);position:relative}
-.lb-frame iframe{width:100%;height:100%;border:none;display:block;background:#000;position:relative;z-index:2}
-.lb-spin{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:1}
-.lb-spin div{width:30px;height:30px;border:1px solid rgba(0,255,136,.2);border-top-color:var(--gneon);border-radius:50%;animation:spin .8s linear infinite}
-.lb-meta{display:flex;align-items:center;gap:16px;font-family:'Space Mono',monospace;font-size:11px;color:var(--g600);letter-spacing:1.5px;max-width:88vw}
-.lb-title{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:var(--w)}
-.lb-count{color:var(--gneon);flex-shrink:0}
-.lb-btn{position:absolute;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:2px;border:1px solid rgba(255,255,255,.12);background:rgba(5,5,5,.6);backdrop-filter:blur(8px);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s;z-index:3}
-.lb-btn svg{width:18px;height:18px;stroke:var(--g600);stroke-width:1.5;fill:none;transition:stroke .25s}
-.lb-btn:hover{border-color:var(--gneon);background:rgba(0,255,136,.08)}
-.lb-btn:hover svg{stroke:var(--gneon);filter:drop-shadow(0 0 4px var(--gneon))}
-.lb-prev{left:max(16px,calc(50vw - min(380px,88vw)/2 - 76px))}
-.lb-next{right:max(16px,calc(50vw - min(380px,88vw)/2 - 76px))}
-.lb-close{position:absolute;top:20px;right:20px;width:44px;height:44px;border-radius:2px;border:1px solid rgba(255,255,255,.12);background:rgba(5,5,5,.6);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s;z-index:3}
-.lb-close svg{width:16px;height:16px;stroke:var(--g600);stroke-width:2;fill:none}
-.lb-close:hover{border-color:#ff4466;background:rgba(255,68,102,.08)}
-.lb-close:hover svg{stroke:#ff4466}
-.lb-open-ext{font-family:'Space Mono',monospace;font-size:10px;color:var(--g500);letter-spacing:1.5px;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;transition:color .2s}
-.lb-open-ext:hover{color:var(--gneon)}
-.lb-open-ext svg{width:10px;height:10px;stroke:currentColor;stroke-width:2;fill:none}
-@media(max-width:640px){
-  .lb-btn{top:auto;bottom:-4px;transform:none}
-  .lb-prev{left:calc(50vw - 120px)}
-  .lb-next{right:calc(50vw - 120px)}
-  .lb-frame{height:min(600px,66vh)}
-  .lb-inner{padding-bottom:70px}
-}
-
-/* ── CHAR SPLIT (data-anim-split) ── */
-[data-anim-split] .ch{display:inline-block;opacity:0;transform:translateY(.9em);filter:blur(6px);transition:transform .7s cubic-bezier(.2,.8,.2,1),opacity .55s ease,filter .55s ease;transition-delay:var(--d,0s);will-change:transform,opacity}
-[data-anim-split].split-in .ch{opacity:1;transform:none;filter:blur(0)}
-
-/* ── CUSTOM CURSOR + MAGNETIC ── */
-#cursorDot,#cursorRing{position:fixed;top:0;left:0;pointer-events:none;z-index:10000;border-radius:50%;opacity:0;transition:opacity .3s}
-body.has-cursor #cursorDot,body.has-cursor #cursorRing{opacity:1}
-#cursorDot{width:6px;height:6px;background:var(--gneon);box-shadow:0 0 10px var(--gneon);margin:-3px 0 0 -3px}
-#cursorRing{width:36px;height:36px;border:1px solid rgba(0,255,136,.45);margin:-18px 0 0 -18px;transition:opacity .3s,width .3s,height .3s,margin .3s,border-color .3s}
-#cursorRing.hov{width:56px;height:56px;margin:-28px 0 0 -28px;border-color:var(--gneon);box-shadow:0 0 18px rgba(0,255,136,.25)}
-.mag{transition:transform .25s cubic-bezier(.2,.8,.2,1)}
-@media(pointer:coarse){#cursorDot,#cursorRing{display:none}}
-
-/* ── PROGRESS DRIVER (data-anim-progress) ── */
-.sec-divider{transform-origin:left center;transform:scaleX(var(--p,1))}
-
-/* ── REDUCED MOTION: stop everything, show all ── */
-@media (prefers-reduced-motion: reduce){
-  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
-  html{scroll-behavior:auto}
-  .au,.rv{opacity:1!important;transform:none!important;filter:none!important}
-  [data-anim-split] .ch{opacity:1!important;transform:none!important;filter:none!important}
-  #cursorDot,#cursorRing{display:none!important}
-  .sec-divider{transform:none!important}
-}
 
 /* ── CONTACT ── */
 #contact{background:var(--blk2)}
@@ -555,7 +489,7 @@ body.admin-mode #hero,body.admin-mode .marquee-band,body.admin-mode #services,bo
     <div class="s-head rv">
       <div>
         <div class="sec-lbl">Services</div>
-        <h2 class="sec-h" data-anim-split>私たちの<em>サービス</em></h2>
+        <h2 class="sec-h">私たちの<em>サービス</em></h2>
         <p class="sec-d">お客様のビジョンを実現するために、最適なソリューションをご提供します。</p>
       </div>
       <div class="s-num-big">01</div>
@@ -609,8 +543,8 @@ body.admin-mode #hero,body.admin-mode .marquee-band,body.admin-mode #services,bo
     <div class="c-head-row rv">
       <div>
         <div class="sec-lbl">Content</div>
-        <h2 class="sec-h" data-anim-split>動画<em>ギャラリー</em></h2>
-        <p class="sec-d">最新のコンテンツ。カードをタップでその場再生、スワイプ・ドラッグで操作できます。</p>
+        <h2 class="sec-h">動画<em>ギャラリー</em></h2>
+        <p class="sec-d">最新のコンテンツ。スワイプ・ドラッグで操作できます。</p>
       </div>
       <div class="c-speed-ctrl">
         <span class="c-speed-dot" id="flowDot"></span>
@@ -630,33 +564,12 @@ body.admin-mode #hero,body.admin-mode .marquee-band,body.admin-mode #services,bo
   </div>
   <div class="sec-inner">
     <div class="c-ctrl" id="cNav" style="display:none">
-      <button class="c-btn" onclick="seek(-1)" aria-label="前へ"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
-      <span class="c-count" id="cCount">1 / 1</span>
-      <button class="c-btn" onclick="seek(1)" aria-label="次へ"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+      <button class="c-btn" onclick="seek(-1)"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <button class="c-btn" onclick="seek(1)"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
     </div>
-    <p class="c-hint" id="cHint" style="display:none">TAP TO PLAY / SWIPE TO NAVIGATE</p>
+    <p class="c-hint" id="cHint" style="display:none">SWIPE / DRAG TO NAVIGATE</p>
   </div>
 </section>
-
-<!-- LIGHTBOX: カードクリックでその場再生。← → / スワイプで前後、Esc・背景タップで閉じる -->
-<div id="lightbox" role="dialog" aria-modal="true" aria-label="動画プレーヤー">
-  <div class="lb-backdrop" onclick="closeLb()"></div>
-  <button class="lb-close" onclick="closeLb()" aria-label="閉じる"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
-  <button class="lb-btn lb-prev" onclick="lbNav(-1)" aria-label="前の動画"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
-  <button class="lb-btn lb-next" onclick="lbNav(1)" aria-label="次の動画"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
-  <div class="lb-inner">
-    <div class="lb-frame" id="lbFrame"><div class="lb-spin"><div></div></div></div>
-    <div class="lb-meta">
-      <span class="lb-count" id="lbCount"></span>
-      <span class="lb-title" id="lbTitle"></span>
-      <a class="lb-open-ext" id="lbExt" href="#" target="_blank" rel="noopener">TIKTOK <svg viewBox="0 0 24 24"><path d="M7 17L17 7M7 7h10v10"/></svg></a>
-    </div>
-  </div>
-</div>
-
-<!-- CUSTOM CURSOR (デスクトップのみ / reduced-motion で無効) -->
-<div id="cursorDot"></div>
-<div id="cursorRing"></div>
 
 <!-- CONTACT -->
 <section id="contact" class="sec">
@@ -664,7 +577,7 @@ body.admin-mode #hero,body.admin-mode .marquee-band,body.admin-mode #services,bo
   <div class="sec-inner">
     <div class="rv" style="text-align:center">
       <div class="sec-lbl" style="justify-content:center">Contact</div>
-      <h2 class="sec-h" data-anim-split>お問い合わせ</h2>
+      <h2 class="sec-h">お問い合わせ</h2>
       <p class="sec-d" style="margin:0 auto">プロジェクトのご相談、お見積もりなどお気軽にどうぞ。</p>
     </div>
     <div class="ct-grid">
@@ -761,15 +674,12 @@ body.admin-mode #hero,body.admin-mode .marquee-band,body.admin-mode #services,bo
 /* ═══ CONFIG ═══ */
 const CONFIG={
   ADMIN_PW:'hydra2025',
-  GH_OWNER:'ibushi9',
+  GH_OWNER:'YOUR_GITHUB_USERNAME',
   GH_REPO:'hydra-portfolio',
   GH_BRANCH:'main',
   GH_FILE:'videos.json'
 };
 let tikToks=[],ghToken=null,ghSha=null;
-/* reduced-motion: 有効時は追加モーションを全て停止する(CSS側でも停止) */
-const REDUCED=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const FINE_POINTER=window.matchMedia('(pointer: fine)').matches;
 
 /* ═══ PRELOADER ═══ */
 (function(){
@@ -823,7 +733,6 @@ function animateCount(el){
 
 /* ═══ CANVAS PARTICLE NETWORK (mouse-reactive) ═══ */
 (function(){
-  if(REDUCED)return; /* reduced-motion 時は背景アニメも停止 */
   const cv=document.getElementById('bgCanvas');
   const cx=cv.getContext('2d');
   let W,H,pts=[],mouse={x:-1000,y:-1000};
@@ -953,37 +862,21 @@ async function loadVideos(){
 /* ═══ MARQUEE CAROUSEL ═══ */
 const SW_D=320,SW_M=280,GAP=20;
 let SLIDE_W=SW_D+GAP;
-let setWidth=0,autoPos=0,dragOffset=0,dragging=false,paused=REDUCED,resumeTimer=null;
-let validVideos=[],inertia=0;
+let setWidth=0,autoPos=0,dragOffset=0,dragging=false,paused=false,resumeTimer=null;
 const SPEED=.45;
 
 function extractTkId(url){const m=url.match(/\/video\/(\d+)/);return m?m[1]:null}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
-function buildSlide(item,idx){
+function buildSlide(item){
   const id=extractTkId(item.url);
   if(!id)return null;
-  /* iframe は data-src で遅延読み込み(視界に入ったスライドだけロード) */
-  return `<div class="c-slide" data-idx="${idx}"><div class="v-card">
+  return `<div class="c-slide"><div class="v-card">
     <div class="v-badge"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005.8 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1.84-.1z"/></svg>TIKTOK</div>
-    <a class="v-open" href="${escapeHtml(item.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">OPEN <svg viewBox="0 0 24 24"><path d="M7 17L17 7M7 7h10v10"/></svg></a>
-    <iframe data-src="https://www.tiktok.com/embed/v2/${id}?lang=ja" allow="encrypted-media" allowfullscreen scrolling="no" loading="lazy" title="${escapeHtml(item.title||'TikTok動画')}"></iframe>
-    <div class="v-play"><div class="v-play-ic"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
-    <div class="v-label">${escapeHtml(item.title||('Video '+(idx+1)))}</div>
+    <a class="v-open" href="${escapeHtml(item.url)}" target="_blank" rel="noopener">OPEN <svg viewBox="0 0 24 24"><path d="M7 17L17 7M7 7h10v10"/></svg></a>
+    <iframe src="https://www.tiktok.com/embed/v2/${id}?lang=ja" allow="encrypted-media" allowfullscreen scrolling="no" loading="lazy"></iframe>
+    ${item.title?`<div class="v-label">${escapeHtml(item.title)}</div>`:''}
   </div></div>`;
-}
-
-/* 視界に入ったスライドの iframe だけ src を流し込む(初期表示の軽量化) */
-let lazyIO=null;
-function initLazyIframes(){
-  if(lazyIO)lazyIO.disconnect();
-  lazyIO=new IntersectionObserver(es=>es.forEach(e=>{
-    if(!e.isIntersecting)return;
-    const f=e.target.querySelector('iframe[data-src]');
-    if(f){f.src=f.dataset.src;f.removeAttribute('data-src')}
-    lazyIO.unobserve(e.target);
-  }),{rootMargin:'0px 400px 0px 400px'});
-  document.querySelectorAll('#track .c-slide').forEach(s=>lazyIO.observe(s));
 }
 
 function renderCarousel(){
@@ -994,35 +887,25 @@ function renderCarousel(){
 
   if(!tikToks.length){
     track.innerHTML='<div class="c-empty"><div class="c-ei">🎬</div><p style="font-family:\'Space Mono\',monospace;font-size:11px;letter-spacing:2px">NO CONTENT YET</p></div>';
-    nav.style.display='none';hint.style.display='none';validVideos=[];return;
+    nav.style.display='none';hint.style.display='none';return;
   }
   const valid=tikToks.filter(t=>extractTkId(t.url));
-  if(!valid.length){track.innerHTML='<div class="c-empty"><div class="c-ei">⚠</div><p style="font-family:\'Space Mono\',monospace;font-size:11px;letter-spacing:2px">INVALID URLS</p></div>';nav.style.display='none';hint.style.display='none';validVideos=[];return;}
-  validVideos=valid;
+  if(!valid.length){track.innerHTML='<div class="c-empty"><div class="c-ei">⚠</div><p style="font-family:\'Space Mono\',monospace;font-size:11px;letter-spacing:2px">INVALID URLS</p></div>';nav.style.display='none';hint.style.display='none';return;}
   const reps=valid.length<3?3:2;
   let html='';
-  for(let r=0;r<reps;r++)valid.forEach((item,i)=>{const s=buildSlide(item,i);if(s)html+=s});
+  for(let r=0;r<reps;r++)valid.forEach(item=>{const s=buildSlide(item);if(s)html+=s});
   track.innerHTML=html;
   setWidth=SLIDE_W*valid.length;
-  autoPos=0;dragOffset=0;inertia=0;
+  autoPos=0;dragOffset=0;
   nav.style.display='flex';hint.style.display='block';
-  initLazyIframes();
 }
 
 /* animation loop */
 function tickFlow(){
-  if(!dragging&&!paused&&!REDUCED&&setWidth>0)autoPos-=SPEED;
-  /* ドラッグ後の慣性(離した速度で滑って減速) */
-  if(!dragging&&Math.abs(inertia)>.1){autoPos+=inertia;inertia*=.94}
+  if(!dragging&&!paused&&setWidth>0)autoPos-=SPEED;
   if(setWidth>0){while(autoPos<=-setWidth)autoPos+=setWidth;while(autoPos>0)autoPos-=setWidth;}
   const track=document.getElementById('track');
   if(track)track.style.transform=`translate3d(${autoPos+dragOffset}px,0,0)`;
-  /* 現在位置カウンタ (n / total) */
-  const cc=document.getElementById('cCount');
-  if(cc&&validVideos.length){
-    const cur=((Math.round(-(autoPos+dragOffset)/SLIDE_W)%validVideos.length)+validVideos.length)%validVideos.length;
-    cc.textContent=(cur+1)+' / '+validVideos.length;
-  }
   const dot=document.getElementById('flowDot');
   const lbl=document.getElementById('flowLbl');
   const btn=document.getElementById('pauseBtn');
@@ -1035,29 +918,12 @@ function tickFlow(){
 requestAnimationFrame(tickFlow);
 
 function togglePause(){paused=!paused}
-/* スナップ送り: 1枚ぶん確実に移動し、境界に整列させる */
-function seek(dir){
-  inertia=0;
-  const cur=Math.round(-autoPos/SLIDE_W);
-  autoPos=-(cur+dir)*SLIDE_W;
-  paused=true;clearTimeout(resumeTimer);resumeTimer=setTimeout(()=>paused=false,2500);
-}
+function seek(dir){autoPos-=dir*SLIDE_W;paused=true;clearTimeout(resumeTimer);resumeTimer=setTimeout(()=>paused=false,2500)}
 const vp=document.getElementById('cVp');
-let startX=0,lastX=0,lastT=0,dragVel=0,dragDist=0;
-function ds(x){if(!setWidth)return;dragging=true;startX=x;lastX=x;lastT=performance.now();dragVel=0;dragDist=0;dragOffset=0;inertia=0;vp.classList.add('drag')}
-function dm(x){
-  if(!dragging)return;
-  dragOffset=x-startX;dragDist=Math.max(dragDist,Math.abs(dragOffset));
-  const now=performance.now(),dt=now-lastT;
-  if(dt>0){dragVel=(x-lastX)/dt*16;lastX=x;lastT=now}
-}
-function de(){
-  if(!dragging)return;
-  dragging=false;vp.classList.remove('drag');
-  autoPos+=dragOffset;dragOffset=0;
-  inertia=Math.max(-40,Math.min(40,dragVel));dragVel=0;
-  paused=true;clearTimeout(resumeTimer);resumeTimer=setTimeout(()=>paused=false,1800);
-}
+let startX=0;
+function ds(x){if(!setWidth)return;dragging=true;startX=x;dragOffset=0;vp.classList.add('drag')}
+function dm(x){if(!dragging)return;dragOffset=x-startX}
+function de(){if(!dragging)return;dragging=false;vp.classList.remove('drag');autoPos+=dragOffset;dragOffset=0;paused=true;clearTimeout(resumeTimer);resumeTimer=setTimeout(()=>paused=false,1800)}
 vp.addEventListener('mousedown',e=>{e.preventDefault();ds(e.clientX)});
 window.addEventListener('mousemove',e=>dm(e.clientX));
 window.addEventListener('mouseup',de);
@@ -1068,60 +934,6 @@ vp.addEventListener('touchcancel',de);
 vp.addEventListener('mouseenter',()=>{paused=true});
 vp.addEventListener('mouseleave',()=>{if(!dragging){clearTimeout(resumeTimer);resumeTimer=setTimeout(()=>paused=false,400)}});
 window.addEventListener('resize',()=>{const nw=(window.innerWidth<=640?SW_M:SW_D)+GAP;if(nw!==SLIDE_W)renderCarousel()});
-
-/* カードクリック → ライトボックスでその場再生(ドラッグと区別: 移動8px未満のみ) */
-vp.addEventListener('click',e=>{
-  if(dragDist>8)return;
-  const slide=e.target.closest('.c-slide');
-  if(slide&&slide.dataset.idx!==undefined)openLb(+slide.dataset.idx);
-});
-
-/* ═══ LIGHTBOX ═══ */
-let lbIdx=0,lbOpen=false;
-function lbBuildFrame(id){
-  const frame=document.getElementById('lbFrame');
-  frame.innerHTML='<div class="lb-spin"><div></div></div>'+
-    `<iframe src="https://www.tiktok.com/embed/v2/${id}?lang=ja&autoplay=1" allow="encrypted-media; autoplay; fullscreen" allowfullscreen scrolling="no"></iframe>`;
-}
-function openLb(i){
-  if(!validVideos.length)return;
-  lbIdx=((i%validVideos.length)+validVideos.length)%validVideos.length;
-  const item=validVideos[lbIdx];
-  const id=extractTkId(item.url);
-  if(!id)return;
-  lbBuildFrame(id);
-  document.getElementById('lbTitle').textContent=item.title||('Video '+(lbIdx+1));
-  document.getElementById('lbCount').textContent=(lbIdx+1)+' / '+validVideos.length;
-  document.getElementById('lbExt').href=item.url;
-  document.getElementById('lightbox').classList.add('open');
-  document.body.style.overflow='hidden';
-  lbOpen=true;paused=true;clearTimeout(resumeTimer);
-}
-function lbNav(dir){if(lbOpen)openLb(lbIdx+dir)}
-function closeLb(){
-  document.getElementById('lightbox').classList.remove('open');
-  document.getElementById('lbFrame').innerHTML='<div class="lb-spin"><div></div></div>';
-  document.body.style.overflow='';
-  lbOpen=false;
-  clearTimeout(resumeTimer);resumeTimer=setTimeout(()=>paused=false,600);
-}
-window.addEventListener('keydown',e=>{
-  if(!lbOpen)return;
-  if(e.key==='Escape')closeLb();
-  else if(e.key==='ArrowLeft')lbNav(-1);
-  else if(e.key==='ArrowRight')lbNav(1);
-});
-/* ライトボックス内スワイプで前後の動画へ */
-(function(){
-  const lb=document.getElementById('lightbox');
-  let sx=null;
-  lb.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});
-  lb.addEventListener('touchend',e=>{
-    if(sx===null)return;
-    const dx=e.changedTouches[0].clientX-sx;sx=null;
-    if(Math.abs(dx)>60)lbNav(dx<0?1:-1);
-  },{passive:true});
-})();
 
 /* ═══ ADMIN ═══ */
 function openAdmin(){location.hash='admin';showAdmin()}
@@ -1221,121 +1033,6 @@ function submitForm(e){
     setTimeout(()=>{btn.textContent='SEND MESSAGE →';btn.style.background='';btn.style.color='';btn.disabled=false},3000);
   });
 }
-
-/* ═══════════════════════════════════════════════════════════
-   MOTION MODULES(属性駆動 API)
-   - data-anim-split    … 見出しを文字単位に分割し1文字ずつ立ち上げる
-   - data-anim-progress … 要素の可視進捗 0→1 を CSS 変数 --p に書き込む
-   - カスタムカーソル + マグネティックボタン(pointer:fine のみ)
-   - 慣性スムーズスクロール(ホイールを lerp 補間、レイアウト非破壊)
-   すべて prefers-reduced-motion: reduce で無効化される
-   ═══════════════════════════════════════════════════════════ */
-
-/* ── data-anim-split: 文字分割 ── */
-(function(){
-  if(REDUCED)return;
-  function split(node,state){
-    [...node.childNodes].forEach(n=>{
-      if(n.nodeType===3){
-        const frag=document.createDocumentFragment();
-        for(const ch of n.textContent){
-          if(ch===' '){frag.appendChild(document.createTextNode(' '));continue}
-          const s=document.createElement('span');
-          s.className='ch';s.textContent=ch;
-          s.style.setProperty('--d',(state.i*0.035)+'s');
-          state.i++;frag.appendChild(s);
-        }
-        n.replaceWith(frag);
-      }else if(n.nodeType===1){split(n,state)}
-    });
-  }
-  const els=document.querySelectorAll('[data-anim-split]');
-  els.forEach(el=>split(el,{i:0}));
-  const io=new IntersectionObserver(es=>es.forEach(e=>{
-    if(e.isIntersecting){e.target.classList.add('split-in');io.unobserve(e.target)}
-  }),{threshold:.3});
-  els.forEach(el=>io.observe(el));
-})();
-
-/* ── data-anim-progress: 可視進捗を --p (0→1) に反映 ── */
-(function(){
-  if(REDUCED)return;
-  const els=document.querySelectorAll('[data-anim-progress], .sec-divider');
-  if(!els.length)return;
-  els.forEach(el=>el.style.setProperty('--p',0));
-  let ticking=false;
-  function update(){
-    ticking=false;
-    const vh=innerHeight;
-    els.forEach(el=>{
-      const r=el.getBoundingClientRect();
-      if(r.bottom<0||r.top>vh)return;
-      const p=Math.min(1,Math.max(0,(vh-r.top)/(vh*.5)));
-      el.style.setProperty('--p',p.toFixed(3));
-    });
-  }
-  addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update)}},{passive:true});
-  update();
-})();
-
-/* ── カスタムカーソル + マグネティックボタン ── */
-(function(){
-  if(REDUCED||!FINE_POINTER)return;
-  const dot=document.getElementById('cursorDot');
-  const ring=document.getElementById('cursorRing');
-  if(!dot||!ring)return;
-  let mx=-100,my=-100,rx=-100,ry=-100,shown=false;
-  addEventListener('mousemove',e=>{
-    mx=e.clientX;my=e.clientY;
-    if(!shown){shown=true;document.body.classList.add('has-cursor');rx=mx;ry=my}
-    /* ホバー対象でリング拡大 */
-    const t=e.target.closest('a,button,.v-card,.s-card,input,textarea');
-    ring.classList.toggle('hov',!!t);
-  },{passive:true});
-  document.documentElement.addEventListener('mouseleave',()=>{shown=false;document.body.classList.remove('has-cursor')});
-  (function loop(){
-    /* dot は即追従、ring は lerp で遅延追従 */
-    rx+=(mx-rx)*.16;ry+=(my-ry)*.16;
-    dot.style.transform=`translate3d(${mx}px,${my}px,0)`;
-    ring.style.transform=`translate3d(${rx}px,${ry}px,0)`;
-    requestAnimationFrame(loop);
-  })();
-  /* マグネティック: ボタンがカーソル方向へ微小に吸着 */
-  document.querySelectorAll('.btn-p,.btn-o,.nav-cta,.btn-send,.c-btn,#pauseBtn,.lb-btn').forEach(btn=>{
-    btn.classList.add('mag');
-    btn.addEventListener('mousemove',e=>{
-      const r=btn.getBoundingClientRect();
-      const dx=e.clientX-(r.left+r.width/2);
-      const dy=e.clientY-(r.top+r.height/2);
-      btn.style.transform=`translate(${dx*.22}px,${dy*.22}px)`;
-    });
-    btn.addEventListener('mouseleave',()=>{btn.style.transform=''});
-  });
-})();
-
-/* ── 慣性スムーズスクロール(ホイール lerp・ネイティブレイアウト維持) ── */
-(function(){
-  if(REDUCED||!FINE_POINTER)return;
-  let target=0,current=0,active=false;
-  const EASE=.11;
-  function loop(){
-    if(!active)return;
-    current+=(target-current)*EASE;
-    if(Math.abs(target-current)<.5){current=target;active=false}
-    window.scrollTo(0,current);
-    if(active)requestAnimationFrame(loop);
-  }
-  addEventListener('wheel',e=>{
-    /* ライトボックス・管理画面・修飾キー付きは素通し */
-    if(lbOpen||document.body.classList.contains('admin-mode')||e.ctrlKey)return;
-    e.preventDefault();
-    if(!active){current=window.scrollY;target=current}
-    const max=document.documentElement.scrollHeight-innerHeight;
-    target=Math.max(0,Math.min(max,target+e.deltaY));
-    if(!active){active=true;requestAnimationFrame(loop)}
-  },{passive:false});
-  /* ナビ等の programmatic スクロール中は介入しない(active時のみ駆動) */
-})();
 </script>
 </body>
 </html>
