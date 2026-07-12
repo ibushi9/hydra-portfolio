@@ -661,10 +661,10 @@ body.admin-mode #hero,body.admin-mode .marquee-band,body.admin-mode #services,bo
       </div>
       <div class="ad-form">
         <h3>TikTok 動画を追加</h3>
-        <p class="ad-form-sub">TikTok 動画ページの URL（例: https://www.tiktok.com/@username/video/1234567890）を貼り付けてください。</p>
+        <p class="ad-form-sub">TikTok 動画ページの URL（例: https://www.tiktok.com/@username/video/1234567890）を貼り付けてください。キャプション(説明文)は自動で取得されます。取得できない場合は手動で入力してください。</p>
         <div class="ad-form-row">
           <input type="url" id="tkUrl" placeholder="https://www.tiktok.com/@username/video/...">
-          <input type="text" id="tkTitle" placeholder="タイトル(任意)" style="max-width:200px">
+          <input type="text" id="tkTitle" placeholder="キャプション(自動取得・編集可)" style="max-width:280px">
           <button class="ad-add-btn" id="addBtn" onclick="addTikTok()">+ 追加して公開</button>
         </div>
         <div class="ad-form-msg" id="tkMsg"></div>
@@ -996,13 +996,46 @@ function renderAdmin(){
     <div class="ad-item-info"><div class="ad-item-name">${escapeHtml(t.title||('Video '+(i+1)))}</div><div class="ad-item-id">ID: ${id||'invalid'}</div></div></div>`;
   }).join('')+'</div>';
 }
+/* TikTok公式oEmbedでキャプション(説明文)を取得。再生数・いいね数・保存数は
+   TikTokが一般公開向けに提供していないため取得しない(公式APIは審査制の法人向けのみ) */
+async function fetchTkCaption(url){
+  try{
+    const res=await fetch('https://www.tiktok.com/oembed?url='+encodeURIComponent(url));
+    if(!res.ok)return null;
+    const data=await res.json();
+    return data.title||null;
+  }catch{return null}
+}
+(function(){
+  const urlInput=document.getElementById('tkUrl');
+  const titleInput=document.getElementById('tkTitle');
+  if(!urlInput||!titleInput)return;
+  urlInput.addEventListener('blur',async()=>{
+    const url=urlInput.value.trim();
+    if(!url||!extractTkId(url)||titleInput.value.trim())return;
+    const msg=document.getElementById('tkMsg');
+    msg.className='ad-form-msg info';msg.textContent='キャプション取得中...';
+    const caption=await fetchTkCaption(url);
+    if(caption&&!titleInput.value.trim()){
+      titleInput.value=caption;
+      msg.className='ad-form-msg ok';msg.textContent='✓ キャプションを取得しました(編集可)';
+      setTimeout(()=>{msg.textContent='';msg.className='ad-form-msg'},2500);
+    }else{
+      msg.textContent='';msg.className='ad-form-msg';
+    }
+  });
+})();
 async function addTikTok(){
   const url=document.getElementById('tkUrl').value.trim();
-  const title=document.getElementById('tkTitle').value.trim();
   const msg=document.getElementById('tkMsg');const btn=document.getElementById('addBtn');
   if(!url){msg.className='ad-form-msg err';msg.textContent='URLを入力してください';return}
   if(!extractTkId(url)){msg.className='ad-form-msg err';msg.textContent='有効なTikTok動画URLではありません';return}
   btn.disabled=true;btn.innerHTML='<div class="ad-spin"></div>SAVING...';
+  let title=document.getElementById('tkTitle').value.trim();
+  if(!title){
+    msg.className='ad-form-msg info';msg.textContent='キャプション取得中...';
+    title=await fetchTkCaption(url)||'';
+  }
   msg.className='ad-form-msg info';msg.textContent='Pushing to GitHub...';
   await fetchFromGitHub();tikToks.unshift({url,title:title||'TikTok動画'});
   try{await pushToGitHub(`Add: ${title||url}`);msg.className='ad-form-msg ok';msg.innerHTML='✓ 公開完了。約1分で反映されます';document.getElementById('tkUrl').value='';document.getElementById('tkTitle').value='';renderAdmin();setTimeout(()=>{msg.textContent='';msg.className='ad-form-msg'},5000);}
