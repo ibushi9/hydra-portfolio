@@ -5,6 +5,7 @@ import RevealOnScroll from "./RevealOnScroll";
 
 const SERVICES = [
   {
+    num: "01",
     idx: "/ 01",
     title: "動画制作",
     desc: "SNS向け短尺ムービーから企業PRビデオまで、視聴者の心を掴む映像コンテンツを高品質に制作します。",
@@ -16,6 +17,7 @@ const SERVICES = [
     ),
   },
   {
+    num: "02",
     idx: "/ 02",
     title: "SNS運用マーケティング",
     desc: "TikTok・Instagram・YouTube等のプラットフォームで効果的なブランドコミュニケーションを展開します。",
@@ -26,6 +28,7 @@ const SERVICES = [
     ),
   },
   {
+    num: "03",
     idx: "/ 03",
     title: "AI活用コンテンツ",
     desc: "AIによる動画自動編集・SNSリサーチツールなど、制作を加速するAIプロダクトの開発・提供を行います。",
@@ -37,6 +40,39 @@ const SERVICES = [
     ),
   },
 ];
+
+function ServiceCard({ s, i, cardsRef }) {
+  const innerRef = useRef(null);
+
+  function onMouseMove(e) {
+    const el = innerRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width - 0.5;
+    const py = (e.clientY - r.top) / r.height - 0.5;
+    el.style.transform = `rotateY(${px * 18}deg) rotateX(${-py * 18}deg) translateZ(10px)`;
+  }
+  function onMouseLeave() {
+    if (innerRef.current) innerRef.current.style.transform = "";
+  }
+
+  return (
+    <div className="s-card" ref={(el) => (cardsRef.current[i] = el)} onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
+      <div className="s-card-inner" ref={innerRef}>
+        <span className="s-card-num" aria-hidden="true">
+          {s.num}
+        </span>
+        <span className="s-idx">{s.idx}</span>
+        <div className="s-ico">{s.icon}</div>
+        <h3>{s.title}</h3>
+        <p>{s.desc}</p>
+        <a className="s-more" onClick={() => scrollToSection("contact")}>
+          詳しく見る →
+        </a>
+      </div>
+    </div>
+  );
+}
 
 export default function ServicesSection() {
   const cardsRef = useRef([]);
@@ -53,15 +89,17 @@ export default function ServicesSection() {
             if (!card) return;
             gsap.fromTo(
               card,
-              { rotateY: i % 2 === 0 ? -70 : 70, opacity: 0, transformPerspective: 1000 },
+              { rotateY: i % 2 === 0 ? -110 : 110, rotateZ: i % 2 === 0 ? -4 : 4, opacity: 0, scale: 0.8, transformPerspective: 1400 },
               {
                 rotateY: 0,
+                rotateZ: 0,
                 opacity: 1,
-                duration: 0.9,
-                ease: "power3.out",
+                scale: 1,
+                duration: 1.1,
+                ease: "power4.out",
                 scrollTrigger: {
                   trigger: card,
-                  start: "top 85%",
+                  start: "top 90%",
                 },
               }
             );
@@ -91,15 +129,7 @@ export default function ServicesSection() {
         </RevealOnScroll>
         <div className="s-grid">
           {SERVICES.map((s, i) => (
-            <div className="s-card" key={s.title} ref={(el) => (cardsRef.current[i] = el)}>
-              <span className="s-idx">{s.idx}</span>
-              <div className="s-ico">{s.icon}</div>
-              <h3>{s.title}</h3>
-              <p>{s.desc}</p>
-              <a className="s-more" onClick={() => scrollToSection("contact")}>
-                詳しく見る →
-              </a>
-            </div>
+            <ServiceCard s={s} i={i} cardsRef={cardsRef} key={s.title} />
           ))}
         </div>
       </div>

@@ -8,10 +8,14 @@ import ServicesSection from "@/components/ServicesSection";
 import CaseStudies from "@/components/CaseStudies";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import CustomCursor from "@/components/CustomCursor";
+import GrainOverlay from "@/components/GrainOverlay";
 
 export default function HomePage() {
   return (
     <>
+      <CustomCursor />
+      <GrainOverlay />
       <Preloader />
       <SiteNav />
       <Hero />

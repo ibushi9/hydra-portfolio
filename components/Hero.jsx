@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import { scrollToSection } from "@/lib/scroll";
+import { useMagnetic } from "@/lib/useMagnetic";
 
 function StatNum({ target, prefix, suffix }) {
   const ref = useRef(null);
@@ -34,6 +35,8 @@ function StatNum({ target, prefix, suffix }) {
 
 export default function Hero() {
   const canvasRef = useRef(null);
+  const magneticP = useMagnetic(0.35, 60);
+  const magneticO = useMagnetic(0.35, 60);
 
   useEffect(() => {
     const cv = canvasRef.current;
@@ -204,16 +207,19 @@ export default function Hero() {
           </div>
         </div>
         <div className="hero-ctas au d5">
-          <a className="btn-p" onClick={() => scrollToSection("video-sec")}>
+          <a className="btn-p" ref={magneticP} onClick={() => scrollToSection("video-sec")}>
             制作実績を見る
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
           </a>
-          <a className="btn-o" onClick={() => scrollToSection("contact")}>
+          <a className="btn-o" ref={magneticO} onClick={() => scrollToSection("contact")}>
             お問い合わせ
           </a>
         </div>
+      </div>
+      <div className="hero-watermark" aria-hidden="true">
+        HYDRA
       </div>
       <div className="hero-scroll au d6" onClick={() => scrollToSection("video-sec")}>
         <div className="hero-scroll-line" />
