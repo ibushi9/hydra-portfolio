@@ -260,15 +260,11 @@ html{scrollbar-color:rgba(0,255,136,.3) var(--blk)}
 .cs-tag{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--gneon);text-transform:uppercase;margin-bottom:14px;display:block;position:relative;z-index:1}
 .cs-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:700;color:var(--w);margin-bottom:10px;position:relative;z-index:1;letter-spacing:-.5px}
 .cs-desc{color:var(--g500);font-size:13px;line-height:1.8;margin-bottom:28px;position:relative;z-index:1}
-.cs-multiplier{position:relative;z-index:1;display:flex;align-items:baseline;gap:4px;font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(48px,6vw,64px);color:var(--gneon);line-height:1;margin-bottom:24px;text-shadow:0 0 24px rgba(0,255,136,.35)}
-.cs-multiplier-x{font-size:.5em;opacity:.7}
-.cs-multiplier-lbl{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:3px;color:var(--g400);text-shadow:none;margin-left:8px;align-self:center}
-.cs-ba{display:flex;align-items:center;gap:16px;border-top:1px solid rgba(255,255,255,.06);padding-top:24px;position:relative;z-index:1}
-.cs-ba-item{flex:1}
-.cs-ba-arrow{color:var(--gneon);font-size:16px;opacity:.6}
-.cs-ba-lbl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--g400);text-transform:uppercase;margin-bottom:6px}
-.cs-ba-num{font-family:'Syne',sans-serif;font-size:clamp(20px,2.6vw,28px);font-weight:800;color:var(--w)}
-.cs-ba-num.after{color:var(--gneon)}
+.cs-stat{position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.06);padding-top:24px}
+.cs-stat-timeframe{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--g400);text-transform:uppercase;display:block;margin-bottom:8px}
+.cs-stat-value{display:flex;align-items:baseline;gap:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(40px,5.5vw,56px);color:var(--gneon);line-height:1;text-shadow:0 0 24px rgba(0,255,136,.35)}
+.cs-stat-unit{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:1px;color:var(--w);text-shadow:none}
+.cs-badge{display:inline-flex;align-items:center;margin-top:16px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--gneon);background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.25);padding:7px 14px;border-radius:20px;text-transform:uppercase}
 .cs-hint{text-align:center;margin-top:8px;font-family:'Space Mono',monospace;font-size:9px;color:var(--g400);letter-spacing:2px;text-transform:uppercase}
 
 /* ── CONTACT ── */
