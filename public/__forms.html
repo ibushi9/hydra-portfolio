@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<!--
+  Netlify detects forms by scanning static HTML in the build output at deploy time.
+  Next.js renders the real contact form client-side, so Netlify's bot can't see it.
+  This file exists only so Netlify registers the "contact" form definition; it is
+  never linked to or visited by users. Keep the field names in sync with
+  components/ContactSection.jsx.
+-->
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <form name="contact" data-netlify="true" netlify-honeypot="bot-field">
+      <input type="hidden" name="form-name" value="contact" />
+      <input name="bot-field" />
+      <input type="text" name="name" />
+      <input type="email" name="email" />
+      <input type="text" name="subject" />
+      <textarea name="message"></textarea>
+    </form>
+  </body>
+</html>
